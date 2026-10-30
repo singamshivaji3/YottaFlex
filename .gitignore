@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local databases and generated outputs
+*.db
+*.sqlite
+*.sqlite3
+exports/*
+!exports/.gitkeep
+data/generated/
+data/full/
+*.tmp
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
