@@ -133,6 +133,16 @@ def test_tables_explorer_valid_and_invalid(client):
     assert bad_resp.status_code == 400
 
 
+def test_evaluation_endpoint(client):
+    response = client.get("/api/evaluation")
+    assert response.status_code == 200
+    data = response.json()
+    assert "recommendations" in data
+    assert "validation" in data
+    assert "table_counts" in data
+    assert data["recommendations"]["recommendation_coverage"] >= 0.0
+
+
 def test_validation_endpoint(client):
     response = client.get("/api/validation")
     assert response.status_code == 200

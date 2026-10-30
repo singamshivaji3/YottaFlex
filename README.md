@@ -67,31 +67,34 @@ py run_server.py
 
 Follow this 5-step path to test the application end-to-end:
 
-1. **Step 1: Open the Application & Home Overview**
+1. **Step 1: Open the Application & Home Overview (Panel 1)**
    - Navigate to `http://localhost:8000`.
-   - Read the one-sentence summary, review the live metric cards (50 Learners, 20 Skills, 600 Attempts, 100% Coverage), and click **"Start a Recommendation →"**.
+   - Read the one-sentence summary, review the 4 live metric boxes (50 Learners, 5 Courses, 20 Skills, 600 Attempts), and click **"Start a Recommendation →"**.
 
-2. **Step 2: Guided Recommendation Flow (Learner Mastery & Cutoffs)**
+2. **Step 2: Learner Mastery & Temporal Cutoffs (Panel 2)**
+   - Click **"Learner Mastery"** on the left sidebar.
    - Filter or select **`LRN-000001 (Alice Chen)`** from the searchable dropdown.
-   - Inspect her skill mastery bars (Mastered $\ge 85\%$, Competent $\ge 70\%$, In Progress).
-   - Test temporal safety: Click **"1 Week Prior"** or **"2 Weeks Prior"** preset cutoffs. Notice scores adjust dynamically without future attempt leakage. Click **"Full Seed History"** to restore.
-   - Review her recent assessment telemetry history table below the competency grid.
+   - Inspect her profile card (Overall Mastery: 72%, Total Assessments: 12).
+   - Review her **Skill Mastery Breakdown** (progress bars with status pills) and **Recent Assessment History** table side-by-side.
+   - Test temporal safety: Switch the **"Time Cutoff"** dropdown to **"Last 7 Days (2026-10-15)"** or **"Last 30 Days"**. Notice scores adjust dynamically without future attempt leakage.
 
-3. **Step 3: Generate Recommendations & Inspect Prerequisite Gates**
-   - Click **"🎯 Generate / Refresh Recommendations"**.
-   - **Eligible Activities:** Review the ranked cards displaying Difficulty, Target Skill, Score (e.g. 84/100), factor breakdown pills, reason codes (`SKILL_DEFICIT_HIGH_PRIORITY`), and human-readable explanations.
-   - **Blocked Activities:** Scroll down to the **"🔒 Blocked Activities"** section. Observe that activities requiring unmastered prerequisites are strictly disqualified on the backend, displaying the exact unmet prerequisite name, required mastery ($0.70$), and Alice's current score.
+3. **Step 3: Generate Recommendations & Inspect Prerequisite Gates (Panel 3)**
+   - Click **"Recommendations"** on the left sidebar.
+   - Click **"Generate Recommendations"**.
+   - Review the **Top Recommendation banner** and summary stat boxes (Recommended, Blocked by Prerequisite, Total Evaluated).
+   - In the **Recommended Learning Activities** table, inspect ranked activities with difficulty, skills, score, and why recommended.
+   - Observe **Blocked Activities** (e.g. `🔒 Gated Content` requiring unmastered prerequisites like Python/SQL with specific current vs required mastery scores).
 
-4. **Step 4: Real-Time Learning Simulator**
-   - Switch to the **"⚡ Learning Simulator"** tab.
-   - Select content item `CNT-000001`, enter score `0.95`, and click **"⚡ Submit Simulated Attempt"**.
-   - Notice the atomic database insertion confirmation. Return to **"Recommendation Flow"** to observe Alice's mastery level and recommendations update live!
+4. **Step 4: Real-Time Learning Simulator (Panel 4)**
+   - Click **"Real-time Simulator"** on the left sidebar.
+   - Select a content item, review its skill tag and difficulty, enter score `85` and duration `18` mins, and click **"Submit Attempt"**.
+   - Notice the atomic database insertion confirmation. Return to **"Learner Mastery"** or **"Recommendations"** to observe Alice's live score and rankings update immediately.
 
-5. **Step 5: Data Quality & Isolated Anomaly Detection**
-   - Switch to **"🛡️ Data Quality & Anomalies"**.
-   - Observe that the **Clean Baseline Database** has 6/6 checks passed and 0 violations.
-   - Click **"Test Detection"** on any of the 5 deliberately injected anomaly fixtures (`ANOM-001` through `ANOM-005`) to verify authentic backend detection without baseline corruption.
-   - Inspect the **"🔍 Database Explorer"** and **"🕸️ Prerequisite DAG"** under Advanced Inspection.
+5. **Step 5: Quality & Anomaly Lab, Explorer & Metrics (Panels 5, 6, 7 & 8)**
+   - Click **"Quality & Anomaly Lab"**: Observe that the **Clean Baseline Database** has 6/6 checks passed and 0 violations. Click **"Test Detection"** on any of the 5 anomaly cases (`ANOM-001` through `ANOM-005`) to verify authentic backend detection.
+   - Click **"Prerequisite DAG"**: View the interactive network graph with the green **"Acyclic DAG Verified (0 Cycles)"** badge.
+   - Click **"Database Explorer"**: Query any of the 10 relational tables with search and pagination.
+   - Click **"Evaluation & Metrics"**: View Precision@K, Recall@K, Coverage (1.00), and Data Quality summary metrics.
 
 ---
 

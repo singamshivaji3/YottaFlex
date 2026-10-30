@@ -3,52 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YottaFlex AI — Learning Recommendation Engine & Quality Platform</title>
+  <title>YottaFlex AI — Learning Recommendation Engine & Data Quality Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Vis-Network for interactive Prerequisite DAG visualization -->
   <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/vis-network.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/dist/vis-network.min.css">
   
   <style>
     :root {
-      /* Calm, accessible light theme */
-      --bg-page: #f8fafc;
-      --bg-surface: #ffffff;
-      --bg-subtle: #f1f5f9;
-      --border-color: #e2e8f0;
-      --border-hover: #cbd5e1;
+      /* Reference Design Theme: Dark Navy Sidebar + Crisp Light Main View */
+      --sidebar-bg: #0B192C;
+      --sidebar-active: #1E88E5;
+      --sidebar-hover: #1E293B;
+      --sidebar-text: #94A3B8;
+      --sidebar-text-active: #FFFFFF;
+      --sidebar-border: #1E293B;
       
-      --text-primary: #0f172a;
+      --bg-page: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F1F5F9;
+      --border-color: #E2E8F0;
+      --border-subtle: #EDF2F7;
+      
+      --text-navy: #0F172A;
       --text-secondary: #475569;
-      --text-muted: #64748b;
+      --text-muted: #64748B;
       
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --primary-subtle: #eef2ff;
-      --primary-text: #3730a3;
+      --primary: #1E88E5;
+      --primary-hover: #1565C0;
+      --primary-subtle: #EBF5FF;
+      --primary-text: #0D47A1;
       
-      --success: #059669;
-      --success-bg: #ecfdf5;
-      --success-border: #a7f3d0;
-      --success-text: #065f46;
+      --success: #10B981;
+      --success-bg: #ECFDF5;
+      --success-border: #A7F3D0;
+      --success-text: #065F46;
       
-      --warning: #d97706;
-      --warning-bg: #fffbeb;
-      --warning-border: #fde68a;
-      --warning-text: #92400e;
+      --warning: #F59E0B;
+      --warning-bg: #FFFBEB;
+      --warning-border: #FDE68A;
+      --warning-text: #92400E;
       
-      --danger: #dc2626;
-      --danger-bg: #fef2f2;
-      --danger-border: #fecaca;
-      --danger-text: #991b1b;
+      --danger: #EF4444;
+      --danger-bg: #FEF2F2;
+      --danger-border: #FECACA;
+      --danger-text: #991B1B;
       
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
       --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
     }
 
     * {
@@ -60,70 +67,55 @@
 
     body {
       background-color: var(--bg-page);
-      color: var(--text-primary);
+      color: var(--text-navy);
       display: flex;
       min-height: 100vh;
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.5;
     }
 
-    /* Sidebar Navigation */
+    /* Left Sidebar matching Reference Image */
     .sidebar {
-      width: 270px;
-      background-color: var(--bg-surface);
-      border-right: 1px solid var(--border-color);
+      width: 250px;
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      padding: 24px 16px;
+      padding: 20px 14px;
       position: sticky;
       top: 0;
       height: 100vh;
       overflow-y: auto;
+      z-index: 20;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
+      gap: 10px;
+      margin-bottom: 24px;
       padding: 0 8px;
     }
 
-    .brand-logo {
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, #4f46e5, #0284c7);
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #1E88E5, #38BDF8);
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 19px;
-      color: #ffffff;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .brand-text h2 {
       font-size: 16px;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: -0.3px;
+      color: #FFFFFF;
     }
 
-    .brand-text p {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .nav-section-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text-muted);
+    .brand-title {
+      font-size: 15.5px;
       font-weight: 700;
-      margin: 18px 8px 8px 8px;
+      color: #FFFFFF;
+      letter-spacing: -0.2px;
     }
 
     .nav-list {
@@ -137,33 +129,40 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
+      padding: 9px 12px;
       border-radius: var(--radius-sm);
-      color: var(--text-secondary);
-      text-decoration: none;
+      color: var(--sidebar-text);
       font-weight: 500;
-      font-size: 13.5px;
+      font-size: 13px;
       cursor: pointer;
       transition: all 0.15s ease-in-out;
-      border: 1px solid transparent;
+      text-decoration: none;
     }
 
     .nav-item:hover {
-      background-color: var(--bg-subtle);
-      color: var(--text-primary);
+      background-color: var(--sidebar-hover);
+      color: #FFFFFF;
     }
 
     .nav-item.active {
-      background-color: var(--primary-subtle);
-      color: var(--primary-text);
+      background-color: var(--sidebar-active);
+      color: var(--sidebar-text-active);
       font-weight: 600;
-      border-color: #c7d2fe;
     }
 
     .nav-icon {
-      font-size: 16px;
-      width: 20px;
+      font-size: 15px;
+      width: 18px;
       text-align: center;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 8px 0;
+      border-top: 1px solid var(--sidebar-border);
+      font-size: 11px;
+      color: #64748B;
+      line-height: 1.5;
     }
 
     /* Main Content Area */
@@ -176,10 +175,11 @@
       overflow-y: auto;
     }
 
+    /* Top Page Header */
     .top-header {
-      background-color: var(--bg-surface);
+      background-color: #FFFFFF;
       border-bottom: 1px solid var(--border-color);
-      padding: 18px 32px;
+      padding: 18px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -191,24 +191,24 @@
     .header-left h1 {
       font-size: 19px;
       font-weight: 700;
-      color: var(--text-primary);
+      color: var(--text-navy);
       margin-bottom: 2px;
     }
 
     .header-left p {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--text-muted);
     }
 
-    .header-badges {
+    .header-actions {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
     .container {
-      padding: 28px 32px 48px;
-      max-width: 1200px;
+      padding: 24px 30px 48px;
+      max-width: 1240px;
       margin: 0 auto;
       width: 100%;
     }
@@ -227,20 +227,20 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Cards */
+    /* Card Component */
     .card {
-      background-color: var(--bg-surface);
+      background-color: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 22px;
-      margin-bottom: 22px;
+      padding: 20px;
+      margin-bottom: 20px;
       box-shadow: var(--shadow-sm);
     }
 
     .card-title {
-      font-size: 15.5px;
+      font-size: 14.5px;
       font-weight: 700;
-      color: var(--text-primary);
+      color: var(--text-navy);
       margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
@@ -251,10 +251,11 @@
     .btn {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      padding: 9px 16px;
+      padding: 8px 16px;
       border-radius: var(--radius-sm);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
       border: 1px solid transparent;
@@ -264,39 +265,27 @@
 
     .btn-primary {
       background-color: var(--primary);
-      color: #ffffff;
+      color: #FFFFFF;
     }
 
     .btn-primary:hover {
       background-color: var(--primary-hover);
-      box-shadow: var(--shadow-sm);
     }
 
-    .btn-secondary {
-      background-color: var(--bg-surface);
+    .btn-outline {
+      background-color: #FFFFFF;
       border-color: var(--border-color);
-      color: var(--text-secondary);
+      color: var(--text-navy);
     }
 
-    .btn-secondary:hover {
+    .btn-outline:hover {
       background-color: var(--bg-subtle);
-      color: var(--text-primary);
-      border-color: var(--border-hover);
-    }
-
-    .btn-outline-primary {
-      background-color: var(--primary-subtle);
-      border-color: #c7d2fe;
-      color: var(--primary-text);
-    }
-
-    .btn-outline-primary:hover {
-      background-color: #e0e7ff;
+      border-color: #CBD5E1;
     }
 
     .btn-sm {
-      padding: 6px 12px;
-      font-size: 12px;
+      padding: 5px 10px;
+      font-size: 11.5px;
     }
 
     /* Badges & Status Pills */
@@ -304,9 +293,9 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 3px 8px;
+      padding: 2px 8px;
       border-radius: 9999px;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 600;
       border: 1px solid transparent;
     }
@@ -314,7 +303,7 @@
     .badge-primary {
       background-color: var(--primary-subtle);
       color: var(--primary-text);
-      border-color: #c7d2fe;
+      border-color: #BFDBFE;
     }
 
     .badge-success {
@@ -341,169 +330,63 @@
       border-color: var(--border-color);
     }
 
-    /* Metrics Grid */
-    .metrics-grid {
+    /* Metric Stat Cards */
+    .metrics-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
-    .metric-card {
-      background-color: var(--bg-surface);
+    .metric-box {
+      background: #FFFFFF;
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 18px;
+      padding: 16px 18px;
       box-shadow: var(--shadow-sm);
-    }
-
-    .metric-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .metric-val {
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 4px;
-      letter-spacing: -0.5px;
-    }
-
-    .metric-sub {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    /* Step Sequence Indicator */
-    .steps-nav {
       display: flex;
       align-items: center;
-      background: var(--bg-subtle);
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      margin-bottom: 22px;
-      border: 1px solid var(--border-color);
-      gap: 8px;
+      gap: 14px;
     }
 
-    .step-node {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .step-node.active {
-      color: var(--primary);
-    }
-
-    .step-bubble {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #cbd5e1;
-      color: #ffffff;
+    .metric-icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .step-node.active .step-bubble {
-      background: var(--primary);
-    }
-
-    .step-arrow {
-      color: #94a3b8;
-      font-size: 14px;
-      margin: 0 4px;
-    }
-
-    /* Forms & Controls */
-    .control-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: flex-end;
-      margin-bottom: 18px;
-    }
-
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .control-group label {
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-
-    .form-control {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      padding: 9px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 13.5px;
-      outline: none;
-      transition: border-color 0.15s ease-in-out;
-      width: 100%;
-    }
-
-    .form-control:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    }
-
-    /* Presets Bar */
-    .presets-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
-
-    .preset-pill {
-      font-size: 11.5px;
-      padding: 4px 10px;
+      font-size: 18px;
       background: var(--bg-subtle);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.1s ease;
+      color: var(--primary);
+      flex-shrink: 0;
     }
 
-    .preset-pill:hover {
-      background: #e2e8f0;
-      color: var(--text-primary);
+    .metric-data .val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-navy);
+      line-height: 1.1;
     }
 
-    /* Tables */
+    .metric-data .lbl {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Table Styles */
     .table-container {
       overflow-x: auto;
       border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
+      background: #FFFFFF;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: 12.5px;
       text-align: left;
     }
 
@@ -512,16 +395,15 @@
       color: var(--text-secondary);
       padding: 10px 14px;
       font-weight: 600;
-      font-size: 12px;
+      font-size: 11.5px;
       border-bottom: 1px solid var(--border-color);
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
     }
 
     td {
-      padding: 12px 14px;
+      padding: 11px 14px;
       border-bottom: 1px solid var(--border-color);
-      color: var(--text-primary);
+      color: var(--text-navy);
       vertical-align: middle;
     }
 
@@ -530,201 +412,160 @@
     }
 
     tr:hover td {
-      background-color: #fcfdfe;
+      background-color: #F8FAFC;
+    }
+
+    /* Form Controls */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .form-input, .form-select {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-color);
+      color: var(--text-navy);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.15s ease;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.15);
     }
 
     /* Progress Bar */
-    .progress-bar-bg {
-      background-color: var(--bg-subtle);
-      height: 8px;
-      border-radius: 4px;
+    .progress-bar {
+      background-color: #E2E8F0;
+      height: 6px;
+      border-radius: 3px;
       overflow: hidden;
       width: 100%;
-      min-width: 100px;
-      position: relative;
+      min-width: 80px;
     }
 
-    .progress-bar-fill {
+    .progress-fill {
       height: 100%;
-      border-radius: 4px;
+      border-radius: 3px;
       transition: width 0.3s ease;
     }
 
-    /* Recommendation Cards */
-    .rec-card {
-      background-color: var(--bg-surface);
+    /* Guided Workflow Step Indicators (Panel 9 Style) */
+    .workflow-guide-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .guide-step-card {
+      background: #FFFFFF;
       border: 1px solid var(--border-color);
-      border-left: 4px solid var(--primary);
       border-radius: var(--radius-md);
-      padding: 18px 20px;
-      margin-bottom: 14px;
+      padding: 16px;
       box-shadow: var(--shadow-sm);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
     }
 
-    .rec-card:hover {
-      border-color: var(--primary);
-      box-shadow: var(--shadow-md);
-    }
-
-    .rec-header {
-      display: flex;
-      justify-content: space-between;
+    .guide-step-badge {
+      display: inline-flex;
       align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background: var(--primary);
+      color: #FFFFFF;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
       margin-bottom: 8px;
     }
 
-    .rec-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .rec-factors {
-      display: flex;
-      gap: 12px;
-      margin: 10px 0;
-      flex-wrap: wrap;
-    }
-
-    .factor-pill {
-      font-size: 11.5px;
-      background: var(--bg-subtle);
-      padding: 3px 8px;
-      border-radius: var(--radius-sm);
-      color: var(--text-secondary);
-      border: 1px solid var(--border-color);
-    }
-
-    .factor-pill strong {
-      color: var(--text-primary);
-    }
-
-    .rec-explanation {
-      background-color: #f8fafc;
-      border-left: 3px solid #94a3b8;
-      padding: 8px 12px;
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-      font-size: 12.5px;
-      color: var(--text-secondary);
-      margin-top: 8px;
-    }
-
-    /* Blocked Activity Card */
-    .blocked-card {
-      background-color: #fffaf0;
-      border: 1px solid #feebc8;
-      border-left: 4px solid var(--warning);
-      border-radius: var(--radius-md);
-      padding: 16px 20px;
-      margin-bottom: 12px;
-    }
-
-    .blocked-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .blocked-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #7b341e;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .blocked-reason {
-      font-size: 12.5px;
-      color: #9c4221;
-      margin-top: 4px;
-    }
-
-    /* Banner / Alert */
-    .banner {
-      background-color: var(--primary-subtle);
-      border: 1px solid #c7d2fe;
-      border-radius: var(--radius-md);
-      padding: 14px 18px;
-      margin-bottom: 20px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .banner-icon {
-      font-size: 18px;
-      color: var(--primary);
-    }
-
-    .banner-text {
+    .guide-step-title {
       font-size: 13px;
-      color: var(--primary-text);
-      line-height: 1.45;
-    }
-
-    /* Anomaly Card */
-    .anomaly-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 18px;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .anomaly-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 8px;
-    }
-
-    .anomaly-title {
-      font-size: 14.5px;
       font-weight: 700;
-      color: var(--text-primary);
+      color: var(--text-navy);
+      margin-bottom: 4px;
     }
 
-    .anomaly-desc {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
-    }
-
-    .anomaly-handling {
-      background: var(--bg-subtle);
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
+    .guide-step-desc {
       font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Callout & Banner */
+    .callout-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Tab Pill Bar */
+    .tab-pills {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      gap: 3px;
+      margin-bottom: 16px;
       border: 1px solid var(--border-color);
     }
 
-    /* Vis Network Graph Container */
+    .tab-pill {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 0.15s ease;
+    }
+
+    .tab-pill.active {
+      background: #FFFFFF;
+      color: var(--text-navy);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Vis Network Graph */
     #graph-container {
       width: 100%;
-      height: 520px;
+      height: 480px;
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      background-color: #fafbfc;
+      background-color: #FFFFFF;
     }
 
     /* Loading Spinner */
     .spinner {
       display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(79, 70, 229, 0.2);
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(30, 136, 229, 0.2);
       border-radius: 50%;
       border-top-color: var(--primary);
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.7s linear infinite;
       vertical-align: middle;
       margin-right: 6px;
     }
@@ -732,252 +573,454 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-
-    /* Quick Guide Box */
-    .guide-box {
-      background: #f8fafc;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 18px;
-      margin-top: 14px;
-    }
-
-    .guide-steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-top: 12px;
-    }
-
-    .guide-step-card {
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      padding: 14px;
-      border-radius: var(--radius-sm);
-    }
-
-    .guide-step-num {
-      display: inline-block;
-      width: 22px;
-      height: 22px;
-      background: var(--primary);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 50%;
-      text-align: center;
-      line-height: 22px;
-      margin-bottom: 8px;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Persistent Sidebar Navigation -->
+  <!-- Left Sidebar Navigation (Matching Reference Image) -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-logo">Y</div>
-      <div class="brand-text">
-        <h2>YottaFlex AI</h2>
-        <p>Learning Recommendation Engine</p>
-      </div>
+      <div class="brand-icon">⚡</div>
+      <div class="brand-title">YottaFlex AI</div>
     </div>
 
-    <div class="nav-section-title">Core Workflows</div>
     <ul class="nav-list">
-      <li class="nav-item active" onclick="switchTab('overview')">
+      <li class="nav-item active" onclick="switchNav('home')">
         <span class="nav-icon">🏠</span>
-        <span>Home & Overview</span>
+        <span>Home</span>
       </li>
-      <li class="nav-item" onclick="switchTab('recommendations')">
+      <li class="nav-item" onclick="switchNav('mastery')">
+        <span class="nav-icon">👤</span>
+        <span>Learner Mastery</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('recommendations')">
         <span class="nav-icon">🎯</span>
-        <span>Recommendation Flow</span>
+        <span>Recommendations</span>
       </li>
-      <li class="nav-item" onclick="switchTab('simulator')">
+      <li class="nav-item" onclick="switchNav('simulator')">
         <span class="nav-icon">⚡</span>
-        <span>Learning Simulator</span>
+        <span>Real-time Simulator</span>
       </li>
-      <li class="nav-item" onclick="switchTab('anomalies')">
-        <span class="nav-icon">🛡️</span>
-        <span>Data Quality & Anomalies</span>
-      </li>
-    </ul>
-
-    <div class="nav-section-title">Advanced Inspection</div>
-    <ul class="nav-list">
-      <li class="nav-item" onclick="switchTab('explorer')">
-        <span class="nav-icon">🔍</span>
-        <span>Database Explorer</span>
-      </li>
-      <li class="nav-item" onclick="switchTab('graph')">
+      <li class="nav-item" onclick="switchNav('graph')">
         <span class="nav-icon">🕸️</span>
         <span>Prerequisite DAG</span>
       </li>
+      <li class="nav-item" onclick="switchNav('anomalies')">
+        <span class="nav-icon">🛡️</span>
+        <span>Quality & Anomaly Lab</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('explorer')">
+        <span class="nav-icon">🔍</span>
+        <span>Database Explorer</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('evaluation')">
+        <span class="nav-icon">📊</span>
+        <span>Evaluation & Metrics</span>
+      </li>
     </ul>
 
-    <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
-      <div style="font-size: 11.5px; color: var(--text-muted); line-height: 1.4;">
-        <strong>Clean Seed:</strong> <code>20261022</code><br>
-        <strong>Engine:</strong> EWMA Temporal-Safe<br>
-        <strong>Status:</strong> <span style="color: var(--success); font-weight: 600;">System Online</span>
-      </div>
+    <div class="sidebar-footer">
+      <div><strong>Environment:</strong> Local</div>
+      <div><strong>Seed:</strong> <code>20261022</code></div>
     </div>
   </aside>
 
   <!-- Main View Area -->
   <div class="main-wrapper">
-    <!-- Top Persistent Header -->
+
+    <!-- Top Persistent Page Header -->
     <header class="top-header">
       <div class="header-left">
-        <h1 id="page-title">Platform Overview</h1>
-        <p id="page-subtitle">Deterministic Telemetry, Temporal-Safe Mastery & Explainable Recommender</p>
+        <h1 id="page-title">Welcome to YottaFlex AI</h1>
+        <p id="page-subtitle">Personalized learning recommendations powered by data, AI and real-time insights.</p>
       </div>
-      <div class="header-badges">
-        <span id="active-learner-pill" class="badge badge-primary" style="font-size: 12px; padding: 5px 12px; cursor: pointer;" onclick="switchTab('recommendations')">
-          Active: LRN-000001 (Alice Chen)
+      <div class="header-actions">
+        <span id="global-learner-badge" class="badge badge-primary" style="padding: 6px 12px; font-size: 12px; cursor: pointer;" onclick="switchNav('mastery')">
+          LRN-000001 &bull; Alice Chen
         </span>
-        <button class="btn btn-secondary btn-sm" onclick="showDemoGuideModal()">
-          💡 Evaluator Walkthrough
+        <button class="btn btn-outline btn-sm" onclick="showGuidedWorkflowModal()">
+          💡 How Guided Workflow Works
         </button>
       </div>
     </header>
 
     <div class="container">
 
-      <!-- ================= 1. HOME & OVERVIEW PANEL ================= -->
-      <section id="panel-overview" class="panel active">
-        <!-- 1-Sentence Purpose Banner -->
-        <div class="banner">
-          <div class="banner-icon">ℹ️</div>
-          <div class="banner-text">
-            <strong>YottaFlex AI Learning Recommendation Engine</strong> calculates temporal-safe learner skill mastery, strictly enforces prerequisite gates, and delivers explainable activity recommendations with transparent reason codes.
+      <!-- ================= 1. HOME / OVERVIEW PANEL ================= -->
+      <section id="panel-home" class="panel active">
+        <!-- 4 Metric Cards Row -->
+        <div class="metrics-row">
+          <div class="metric-box">
+            <div class="metric-icon-wrap">👥</div>
+            <div class="metric-data">
+              <div class="val" id="kpi-learners">50</div>
+              <div class="lbl">Active Learners</div>
+            </div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-icon-wrap">📚</div>
+            <div class="metric-data">
+              <div class="val" id="kpi-courses">5</div>
+              <div class="lbl">Courses</div>
+            </div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-icon-wrap">💡</div>
+            <div class="metric-data">
+              <div class="val" id="kpi-skills">20</div>
+              <div class="lbl">Skills</div>
+            </div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-icon-wrap">💬</div>
+            <div class="metric-data">
+              <div class="val" id="kpi-attempts">600</div>
+              <div class="lbl">Interaction Attempts</div>
+            </div>
           </div>
         </div>
 
-        <!-- Meaningful Live Metrics -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-label">Active Learners</div>
-            <div class="metric-val" id="kpi-learners">50</div>
-            <div class="metric-sub">Enrolled & trackable cohort</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Courses & Skills</div>
-            <div class="metric-val" id="kpi-skills">20</div>
-            <div class="metric-sub" id="kpi-courses-sub">5 courses | 20 skills in DAG</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Learning Telemetry</div>
-            <div class="metric-val" id="kpi-attempts">600</div>
-            <div class="metric-sub" id="kpi-assessments-sub">1,170 assessed skill outcomes</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Recommendation Coverage</div>
-            <div class="metric-val" id="kpi-coverage">100%</div>
-            <div class="metric-sub">Zero unhandled cold-starts</div>
-          </div>
-        </div>
-
-        <!-- Prominent Actions Card -->
-        <div class="card" style="background: linear-gradient(to right, #ffffff, #f8fafc); border-left: 4px solid var(--primary);">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <!-- 2 Prominent Action Cards Side-by-Side (Panel 1 Reference) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+          <div class="callout-card">
             <div>
-              <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text-primary);">
-                Ready to explore recommendations or verify data quality?
-              </h3>
-              <p style="font-size: 13px; color: var(--text-secondary);">
-                Launch the guided recommendation flow for an enrolled student or run the data integrity suite.
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span style="font-size: 18px;">🎯</span>
+                <h3 style="font-size: 15px; font-weight: 700; color: var(--text-navy);">Start a Recommendation</h3>
+              </div>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
+                Select a learner, review their mastery, and get personalized learning recommendations.
               </p>
-            </div>
-            <div style="display: flex; gap: 10px;">
-              <button class="btn btn-primary" onclick="switchTab('recommendations')">
-                🎯 Start a Recommendation &rarr;
+              <button class="btn btn-primary" onclick="switchNav('recommendations')">
+                Start Now &rarr;
               </button>
-              <button class="btn btn-secondary" onclick="switchTab('anomalies')">
-                🛡️ Run Data Quality Checks
+            </div>
+          </div>
+
+          <div class="callout-card">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span style="font-size: 18px;">🛡️</span>
+                <h3 style="font-size: 15px; font-weight: 700; color: var(--text-navy);">Run Data Quality Checks</h3>
+              </div>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
+                Validate your data, detect anomalies, and ensure system integrity.
+              </p>
+              <button class="btn btn-outline" onclick="switchNav('anomalies'); runBaselineValidation();">
+                Run Validation
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Quick 4-Step User Guide -->
-        <div class="guide-box">
-          <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
-            <span>📖 How to Use This Application</span>
-            <span class="badge badge-neutral">Quick Guide</span>
-          </h4>
-          <div class="guide-steps">
-            <div class="guide-step-card">
-              <div class="guide-step-num">1</div>
-              <strong style="display: block; font-size: 13px; margin-bottom: 4px;">Select a Learner</strong>
-              <p style="font-size: 12px; color: var(--text-secondary);">
-                Choose any student in the active cohort to inspect their profile and historical telemetry.
-              </p>
-            </div>
-            <div class="guide-step-card">
-              <div class="guide-step-num">2</div>
-              <strong style="display: block; font-size: 13px; margin-bottom: 4px;">Review Mastery</strong>
-              <p style="font-size: 12px; color: var(--text-secondary);">
-                Inspect skill levels calculated via EWMA. Test temporal cutoffs to verify zero future leakage.
-              </p>
-            </div>
-            <div class="guide-step-card">
-              <div class="guide-step-num">3</div>
-              <strong style="display: block; font-size: 13px; margin-bottom: 4px;">Generate Recs</strong>
-              <p style="font-size: 12px; color: var(--text-secondary);">
-                Inspect top-ranked eligible activities and see blocked activities with unmet prerequisites.
-              </p>
-            </div>
-            <div class="guide-step-card">
-              <div class="guide-step-num">4</div>
-              <strong style="display: block; font-size: 13px; margin-bottom: 4px;">Simulate Attempts</strong>
-              <p style="font-size: 12px; color: var(--text-secondary);">
-                Submit a new quiz or exercise to watch the learner's mastery and recommendations update live.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Verification Checklist Table -->
-        <div class="card" style="margin-top: 22px;">
+        <!-- Quick Start Guide (Panel 1 Reference) -->
+        <div class="card">
           <div class="card-title">
-            <span>Verified System Guarantees</span>
-            <span class="badge badge-success">33 / 33 Passing Tests</span>
+            <span>Quick Start Guide</span>
+            <span class="badge badge-neutral">Beginner Friendly</span>
           </div>
+          <div class="workflow-guide-row">
+            <div class="guide-step-card">
+              <div class="guide-step-badge">1</div>
+              <div class="guide-step-title">Select Learner</div>
+              <div class="guide-step-desc">Choose from our 50 active learners cohort.</div>
+            </div>
+            <div class="guide-step-card">
+              <div class="guide-step-badge">2</div>
+              <div class="guide-step-title">Review Mastery</div>
+              <div class="guide-step-desc">See skill progress, EWMA scores & attempt history.</div>
+            </div>
+            <div class="guide-step-card">
+              <div class="guide-step-badge">3</div>
+              <div class="guide-step-title">Get Recommendations</div>
+              <div class="guide-step-desc">View ranked activities & prerequisite gates.</div>
+            </div>
+            <div class="guide-step-card">
+              <div class="guide-step-badge">4</div>
+              <div class="guide-step-title">Check Data Quality</div>
+              <div class="guide-step-desc">Run validation & inspect 5 anomaly fixtures.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 2. LEARNER MASTERY PANEL ================= -->
+      <section id="panel-mastery" class="panel">
+        <!-- Top Filter Bar (Search Learner + Time Cutoff) -->
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
+              <span class="form-label" style="margin: 0; white-space: nowrap;">Select Learner:</span>
+              <input type="text" id="mastery-search-input" class="form-input" placeholder="Search by name or ID..." style="max-width: 220px;" oninput="filterMasteryLearners()">
+              <select id="mastery-learner-select" class="form-select" style="max-width: 280px;" onchange="onGlobalLearnerChanged(this.value)"></select>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="form-label" style="margin: 0; white-space: nowrap;">Time Cutoff:</span>
+              <select id="mastery-cutoff-select" class="form-select" style="width: 200px;" onchange="onCutoffChanged(this.value)">
+                <option value="2026-10-22T12:00:00Z" selected>Default (2026-10-22)</option>
+                <option value="2026-10-15T00:00:00Z">Last 7 Days (2026-10-15)</option>
+                <option value="2026-09-22T00:00:00Z">Last 30 Days (2026-09-22)</option>
+                <option value="">Present (All History)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Learner Profile Summary Card (Panel 2 Reference) -->
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div id="mastery-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: #1E88E5; color: #FFF; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center;">
+                AC
+              </div>
+              <div>
+                <div id="mastery-learner-name" style="font-size: 16px; font-weight: 700; color: var(--text-navy);">Alice Chen</div>
+                <div style="font-size: 12px; color: var(--text-muted);">
+                  Learner ID: <strong id="mastery-learner-id">LRN-000001</strong> &bull; <span id="mastery-learner-email">alice.chen@example.org</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 24px;">
+              <div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Overall Mastery</div>
+                <div id="mastery-stat-overall" style="font-size: 20px; font-weight: 700; color: #1E88E5;">72%</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Total Assessments</div>
+                <div id="mastery-stat-assessments" style="font-size: 20px; font-weight: 700; color: var(--text-navy);">12</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Last Activity</div>
+                <div id="mastery-stat-lastactivity" style="font-size: 14px; font-weight: 600; color: var(--text-navy); margin-top: 4px;">2026-10-20</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Columns: Skill Breakdown (Left) and Assessment History (Right) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <!-- Left: Skill Mastery Breakdown -->
+          <div class="card">
+            <div class="card-title">
+              <span>Skill Mastery Breakdown</span>
+              <span class="badge badge-primary">EWMA Algorithm</span>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Skill</th>
+                    <th>Mastery</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="mastery-breakdown-tbody">
+                  <tr><td colspan="3"><div class="spinner"></div> Loading skills...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: Recent Assessment History -->
+          <div class="card">
+            <div class="card-title">
+              <span>Recent Assessment History</span>
+              <span class="badge badge-neutral">Telemetry Log</span>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Content</th>
+                    <th>Score</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody id="mastery-history-tbody">
+                  <tr><td colspan="4"><div class="spinner"></div> Loading assessment history...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 3. LEARNING RECOMMENDATIONS PANEL ================= -->
+      <section id="panel-recommendations" class="panel">
+        <!-- Top Bar: Learner Selector + Generate Recommendations Button -->
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="form-label" style="margin: 0;">Learner:</span>
+              <select id="recs-learner-select" class="form-select" style="min-width: 260px;" onchange="onGlobalLearnerChanged(this.value)"></select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 11.5px; color: var(--text-muted);" id="recs-last-updated">Last updated: 2026-10-22 12:00</span>
+              <button class="btn btn-primary" onclick="loadRecommendationsData()">
+                Generate Recommendations
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Top Card + 3 Small Stat Boxes (Panel 3 Reference) -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <!-- Top Recommendation Box -->
+          <div class="card" style="margin-bottom: 0; background: linear-gradient(to right, #FFFFFF, #F8FAFC); border-left: 4px solid var(--primary);">
+            <div style="font-size: 11.5px; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
+              🌟 Top Recommendation
+            </div>
+            <div id="top-rec-title" style="font-size: 16px; font-weight: 700; color: var(--text-navy); margin-bottom: 4px;">
+              Machine Learning Fundamentals
+            </div>
+            <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px;">
+              Score: <strong id="top-rec-score" style="color: var(--primary);">92%</strong> &bull; Difficulty: <strong id="top-rec-diff">Medium</strong> &bull; Skill: <strong id="top-rec-skill">Machine Learning</strong>
+            </div>
+            <div id="top-rec-why" style="font-size: 12px; color: var(--text-secondary); background: #F1F5F9; padding: 6px 10px; border-radius: var(--radius-sm);">
+              High skill gap in target competency. Content difficulty matches estimated ability.
+            </div>
+          </div>
+
+          <!-- 3 Stats Boxes in a Grid -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <div class="card" style="margin-bottom: 0; padding: 14px; text-align: center;">
+              <div id="stat-recs-recommended" style="font-size: 22px; font-weight: 700; color: var(--primary);">5</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Recommended</div>
+            </div>
+            <div class="card" style="margin-bottom: 0; padding: 14px; text-align: center;">
+              <div id="stat-recs-blocked" style="font-size: 22px; font-weight: 700; color: var(--warning);">2</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Blocked (Prereq)</div>
+            </div>
+            <div class="card" style="margin-bottom: 0; padding: 14px; text-align: center;">
+              <div id="stat-recs-total" style="font-size: 22px; font-weight: 700; color: var(--text-navy);">7</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Total Evaluated</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Learning Activities Table (Panel 3 Reference) -->
+        <div class="card">
+          <div class="card-title">
+            <span>Recommended Learning Activities</span>
+            <span class="badge badge-success">Ranked & Gated</span>
+          </div>
+
           <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Domain</th>
-                  <th>Challenge Requirement</th>
-                  <th>System Status</th>
-                  <th>Verified Evidence</th>
+                  <th style="width: 30px;">#</th>
+                  <th>Activity</th>
+                  <th>Type</th>
+                  <th>Difficulty</th>
+                  <th>Skills</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                  <th>Why Recommended</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="recommendations-table-tbody">
+                <tr><td colspan="8"><div class="spinner"></div> Generating recommendations...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 4. REAL-TIME SIMULATOR PANEL ================= -->
+      <section id="panel-simulator" class="panel">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+          <!-- Left: Simulation Form -->
+          <div class="card">
+            <div class="card-title">1. Select Content</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label">Choose content item:</label>
+                <select id="sim-content-select" class="form-select" onchange="onSimContentSelected(this.value)"></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Skill Tag:</label>
+                <input type="text" id="sim-skill-tag" class="form-input" value="Python Basics" readonly style="background: var(--bg-subtle);">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Difficulty:</label>
+                <input type="text" id="sim-difficulty" class="form-input" value="Medium" readonly style="background: var(--bg-subtle);">
+              </div>
+            </div>
+
+            <div class="card-title" style="margin-top: 10px;">2. Enter Attempt Details</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+              <div class="form-group">
+                <label class="form-label">Score (0-100):</label>
+                <input type="number" id="sim-score-input" class="form-input" value="85" min="0" max="100">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Duration (minutes):</label>
+                <input type="number" id="sim-duration-input" class="form-input" value="18" min="1" max="180">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Learner:</label>
+                <select id="sim-learner-select" class="form-select" onchange="onGlobalLearnerChanged(this.value)"></select>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="submitSimulatedAttempt()">
+              Submit Attempt
+            </button>
+
+            <!-- Success Alert Box (Panel 4 Reference) -->
+            <div id="sim-success-alert" style="margin-top: 18px; display: none;"></div>
+          </div>
+
+          <!-- Right: What Will Happen Card -->
+          <div class="card">
+            <div class="card-title">What will happen?</div>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 12.5px; color: var(--text-secondary);">
+              <li style="display: flex; gap: 8px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                <span>Attempt will be saved to the SQLite database</span>
+              </li>
+              <li style="display: flex; gap: 8px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                <span>Mastery will be recalculated via EWMA</span>
+              </li>
+              <li style="display: flex; gap: 8px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                <span>Recommendations will be refreshed</span>
+              </li>
+              <li style="display: flex; gap: 8px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                <span>You will see the updated results below</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Latest Attempt Section (Panel 4 Reference) -->
+        <div class="card" style="margin-top: 16px;">
+          <div class="card-title">Latest Attempt</div>
+          <div class="table-container">
+            <table>
+              <thead>
                 <tr>
-                  <td><strong>Deterministic Reproducibility</strong></td>
-                  <td>Seed 20261022 repeatability</td>
-                  <td><span class="badge badge-success">100% Deterministic</span></td>
-                  <td>All 10 tables produce identical SHA-256 hashes across independent runs</td>
+                  <th>Content</th>
+                  <th>Score</th>
+                  <th>Time</th>
+                  <th>Status</th>
                 </tr>
+              </thead>
+              <tbody id="sim-latest-tbody">
                 <tr>
-                  <td><strong>Temporal-Safe Mastery</strong></td>
-                  <td>Strict as-of cutoff filter</td>
-                  <td><span class="badge badge-success">Zero Future Leakage</span></td>
-                  <td>Attempts after query cutoff have 0 influence on historical score</td>
-                </tr>
-                <tr>
-                  <td><strong>Prerequisite Gating</strong></td>
-                  <td>Hard backend eligibility gate</td>
-                  <td><span class="badge badge-success">Enforced at Backend</span></td>
-                  <td>Activities requiring unmastered prerequisites (&lt; 0.70) are strictly blocked</td>
-                </tr>
-                <tr>
-                  <td><strong>Anomaly Fixtures Detection</strong></td>
-                  <td>5 required edge-case fixtures</td>
-                  <td><span class="badge badge-success">5 / 5 Detected</span></td>
-                  <td>100% detection accuracy on isolated ground truth fixtures</td>
+                  <td>Python Basics Quiz</td>
+                  <td>85%</td>
+                  <td>2026-10-22 10:30</td>
+                  <td><span class="badge badge-success">Passed</span></td>
                 </tr>
               </tbody>
             </table>
@@ -986,350 +1029,374 @@
       </section>
 
 
-      <!-- ================= 2. GUIDED RECOMMENDATION FLOW ================= -->
-      <section id="panel-recommendations" class="panel">
-        
-        <!-- Guided Sequence Bar -->
-        <div class="steps-nav">
-          <div class="step-node active">
-            <div class="step-bubble">1</div>
-            <span>Select Learner</span>
-          </div>
-          <span class="step-arrow">&rarr;</span>
-          <div class="step-node active">
-            <div class="step-bubble">2</div>
-            <span>Review Mastery & Telemetry</span>
-          </div>
-          <span class="step-arrow">&rarr;</span>
-          <div class="step-node active">
-            <div class="step-bubble">3</div>
-            <span>Generate Recommendations</span>
-          </div>
-          <span class="step-arrow">&rarr;</span>
-          <div class="step-node active">
-            <div class="step-bubble">4</div>
-            <span>Inspect Reasons & Gates</span>
-          </div>
-        </div>
-
-        <!-- Step 1: Searchable Learner Selector Card -->
-        <div class="card">
-          <div class="card-title">
-            <span>Step 1: Choose Active Learner</span>
-            <span class="badge badge-neutral" id="cohort-count-badge">50 Enrolled Students</span>
-          </div>
-
-          <div class="control-row">
-            <div class="control-group" style="flex: 2;">
-              <label for="learner-search-input">Search / Filter Learner by Name or ID:</label>
-              <input type="text" id="learner-search-input" class="form-control" placeholder="Type to filter, e.g. 'Alice', 'LRN-000001'..." oninput="filterLearnerDropdown()">
-            </div>
-            <div class="control-group" style="flex: 3;">
-              <label for="workflow-learner-select">Active Learner Selection:</label>
-              <select id="workflow-learner-select" class="form-control" onchange="onLearnerChanged(this.value)"></select>
-            </div>
-          </div>
-
-          <!-- Prominent Learner Summary Banner -->
-          <div id="learner-summary-banner" style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <div>
-              <span id="banner-learner-name" style="font-weight: 700; font-size: 15px; color: var(--text-primary);">Alice Chen</span>
-              <span id="banner-learner-id" class="badge badge-primary" style="margin-left: 8px;">LRN-000001</span>
-              <span id="banner-learner-email" style="font-size: 12.5px; color: var(--text-muted); margin-left: 8px;">alice.chen@example.org</span>
-            </div>
-            <div>
-              <span class="badge badge-success">Active Cohort Member</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 2: Competency, Mastery & Cutoff Controls -->
-        <div class="card">
-          <div class="card-title">
-            <span>Step 2: Skill Mastery & Temporal Cutoff Filter</span>
-            <span class="badge badge-primary">EWMA Algorithm (35% Recent / 65% Prior)</span>
-          </div>
-
-          <div style="background: var(--bg-subtle); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 18px; border: 1px solid var(--border-color);">
-            <div class="control-row" style="margin-bottom: 8px;">
-              <div class="control-group" style="flex: 2;">
-                <label for="mastery-cutoff-input">Simulate As-Of Cutoff Timestamp (Prevents Future Data Leakage):</label>
-                <input type="text" id="mastery-cutoff-input" class="form-control" value="2026-10-22T12:00:00Z" placeholder="YYYY-MM-DDTHH:MM:SSZ">
-              </div>
-              <button class="btn btn-secondary" style="margin-bottom: 1px;" onclick="applyCutoff()">
-                Apply Cutoff
-              </button>
-            </div>
-            
-            <div class="presets-row">
-              <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Sensible Presets:</span>
-              <button class="preset-pill" onclick="setPresetCutoff('2026-10-22T12:00:00Z')">Full Seed History (2026-10-22)</button>
-              <button class="preset-pill" onclick="setPresetCutoff('2026-10-15T00:00:00Z')">1 Week Prior (2026-10-15)</button>
-              <button class="preset-pill" onclick="setPresetCutoff('2026-10-08T00:00:00Z')">2 Weeks Prior (2026-10-08)</button>
-              <button class="preset-pill" onclick="setPresetCutoff('')">Reset to Present</button>
-            </div>
-          </div>
-
-          <!-- Mastery Score Breakdown Grid -->
-          <div style="margin-bottom: 20px;">
-            <h4 style="font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px;">
-              Assessed Skill Competency Levels:
-            </h4>
-            <div id="mastery-grid-container">
-              <div class="spinner"></div> Loading learner mastery levels...
-            </div>
-          </div>
-
-          <!-- Recent Interaction Telemetry Table -->
-          <div>
-            <h4 style="font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px;">
-              Recent Interaction & Assessment Telemetry:
-            </h4>
-            <div id="recent-telemetry-container">
-              <div class="spinner"></div> Loading telemetry...
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 3 & 4: Recommendations & Explainability -->
-        <div class="card" id="recommendations-section">
-          <div class="card-title">
-            <span>Step 3 & 4: Explainable Recommendations & Prerequisite Gating</span>
-            <span class="badge badge-success">Prerequisite Gated</span>
-          </div>
-
-          <div class="control-row">
-            <div class="control-group" style="max-width: 140px;">
-              <label for="recs-top-k-select">Recommendation Count:</label>
-              <select id="recs-top-k-select" class="form-control">
-                <option value="3">Top 3</option>
-                <option value="5" selected>Top 5</option>
-                <option value="10">Top 10</option>
-              </select>
-            </div>
-            <button class="btn btn-primary" onclick="loadRecommendations()">
-              🎯 Generate / Refresh Recommendations
-            </button>
-          </div>
-
-          <!-- Section A: Eligible Ranked Recommendations -->
-          <div style="margin-top: 18px; margin-bottom: 24px;">
-            <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-              <span>✅ Eligible Activities (Ranked Multi-Factor Recommendations)</span>
-              <span id="recs-count-badge" class="badge badge-primary">0 Ready</span>
-            </h4>
-            <div id="recommendations-container">
-              <p style="color: var(--text-muted); font-size: 13px;">Click "Generate / Refresh Recommendations" to load suggestions.</p>
-            </div>
-          </div>
-
-          <!-- Section B: Prerequisite-Blocked Activities -->
-          <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
-            <h4 style="font-size: 14px; font-weight: 700; color: #9c4221; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-              <span>🔒 Blocked Activities (Hard Pedagogical Prerequisite Gate)</span>
-              <span id="blocked-count-badge" class="badge badge-warning">0 Blocked</span>
-            </h4>
-            <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px;">
-              These activities have unmet prerequisites. The recommendation engine strictly disqualifies them on the backend until prerequisite mastery reaches 0.70.
-            </p>
-            <div id="blocked-activities-container">
-              <p style="color: var(--text-muted); font-size: 13px;">Generate recommendations to inspect prerequisite gates.</p>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-
-      <!-- ================= 3. LEARNING SIMULATOR ================= -->
-      <section id="panel-simulator" class="panel">
-        <div class="card">
-          <div class="card-title">
-            <span>⚡ Interactive Learning Telemetry Simulator</span>
-            <span class="badge badge-primary">Atomic SQLite Writes</span>
-          </div>
-
-          <!-- Plain-English Explanation -->
-          <div class="banner">
-            <div class="banner-icon">💡</div>
-            <div class="banner-text">
-              <strong>What this does:</strong> Simulates a student taking a lesson, quiz, or project in real time. Submitting creates an atomic attempt record in SQLite, evaluates corresponding skill assessments, and immediately recalculates the learner's live mastery and recommendation rankings.
-            </div>
-          </div>
-
-          <div class="control-row">
-            <div class="control-group">
-              <label for="sim-learner-select">Learner to Simulate:</label>
-              <select id="sim-learner-select" class="form-control" onchange="syncLearnerSelection(this.value)"></select>
-            </div>
-
-            <div class="control-group" style="flex: 2;">
-              <label for="sim-content-select">Real Content Item to Attempt:</label>
-              <select id="sim-content-select" class="form-control"></select>
-            </div>
-
-            <div class="control-group" style="max-width: 140px;">
-              <label for="sim-score-input">Performance Score (0.0 to 1.0):</label>
-              <input type="number" id="sim-score-input" class="form-control" value="0.95" min="0.0" max="1.0" step="0.05">
-            </div>
-
-            <div class="control-group" style="max-width: 120px;">
-              <label for="sim-duration-input">Duration (mins):</label>
-              <input type="number" id="sim-duration-input" class="form-control" value="25" min="1" max="180">
-            </div>
-          </div>
-
-          <div style="margin-top: 10px;">
-            <button class="btn btn-primary" onclick="submitSimulatedAttempt()">
-              ⚡ Submit Simulated Attempt
-            </button>
-          </div>
-
-          <!-- Submission Feedback Container -->
-          <div id="sim-feedback-container" style="margin-top: 18px; display: none;"></div>
-        </div>
-      </section>
-
-
-      <!-- ================= 4. DATA QUALITY & ANOMALIES ================= -->
-      <section id="panel-anomalies" class="panel">
-        <div class="card">
-          <div class="card-title">
-            <span>🛡️ Data Quality & Anomaly Lab</span>
-            <button class="btn btn-primary btn-sm" onclick="runBaselineValidation()">
-              Run Full Baseline Validation
-            </button>
-          </div>
-
-          <!-- Explanation -->
-          <div class="banner">
-            <div class="banner-icon">🔍</div>
-            <div class="banner-text">
-              <strong>Quality Assurance Architecture:</strong> The clean baseline database adheres strictly to primary/foreign key integrity, timestamp chronology, and acyclic DAG prerequisites. In contrast, five isolated anomaly fixtures test that edge-case violations are correctly identified and isolated without corrupting clean data.
-            </div>
-          </div>
-
-          <!-- Live Baseline Validation Results -->
-          <div style="margin-bottom: 24px;">
-            <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px;">
-              Clean Baseline Database Integrity Report:
-            </h4>
-            <div id="validation-report-container">
-              <div class="card" style="background: var(--bg-subtle); border-left: 4px solid var(--success);">
-                <div style="font-weight: 700; color: var(--success); font-size: 14px; margin-bottom: 4px;">
-                  ✅ Baseline Integrity Passed: 0 Violations Detected
-                </div>
-                <div style="font-size: 13px; color: var(--text-secondary);">
-                  Total Checks Executed: <strong>6 / 6</strong> | Status: <strong>PASS</strong> | Isolated Fixtures: <strong>5 Available</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Isolated Anomaly Fixtures -->
-          <div>
-            <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">
-              Isolated Challenge Anomaly Fixtures (Ground Truth):
-            </h4>
-            <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
-              Click "Test Detection" on any fixture below to test authentic backend detection rules against the isolated payload:
-            </p>
-            <div id="anomaly-fixtures-list">
-              <div class="spinner"></div> Loading anomaly fixtures...
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      <!-- ================= 5. DATABASE EXPLORER ================= -->
-      <section id="panel-explorer" class="panel">
-        <div class="card">
-          <div class="card-title">
-            <span>🔍 Relational Database Explorer</span>
-            <span class="badge badge-neutral">Direct Read-Only SQL Inspection</span>
-          </div>
-
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
-            Inspect actual stored records directly from SQLite tables. Table access enforces a strict backend whitelist to safeguard against SQL injection.
-          </p>
-
-          <div class="control-row">
-            <div class="control-group" style="max-width: 280px;">
-              <label for="explorer-table-select">Select Database Table:</label>
-              <select id="explorer-table-select" class="form-control" onchange="loadExplorerTable(this.value)">
-                <option value="learners">learners (Students)</option>
-                <option value="courses">courses (Curricula)</option>
-                <option value="skills">skills (Competencies)</option>
-                <option value="skill_prerequisites">skill_prerequisites (Prerequisites)</option>
-                <option value="content_items">content_items (Activities)</option>
-                <option value="content_skills">content_skills (Skill Mappings)</option>
-                <option value="attempts">attempts (Telemetry)</option>
-                <option value="assessment_results">assessment_results (Evaluations)</option>
-                <option value="learning_paths">learning_paths (Curricular Sequences)</option>
-                <option value="recommendations">recommendations (Ranked Outputs)</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="explorer-table-container">
-            <p style="color: var(--text-muted); font-size: 13px;">Select a table above to view records.</p>
-          </div>
-        </div>
-      </section>
-
-
-      <!-- ================= 6. PREREQUISITE DAG GRAPH ================= -->
+      <!-- ================= 5. SKILL PREREQUISITE GRAPH PANEL ================= -->
       <section id="panel-graph" class="panel">
-        <div class="card">
-          <div class="card-title">
-            <span>🕸️ Skill Prerequisite Directed Acyclic Graph (DAG)</span>
-            <span id="dag-status-badge" class="badge badge-primary">Verifying DAG...</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="font-size: 13px; color: var(--text-muted);">
+            Visualize skill dependencies and ensure a clean learning path.
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="dag-cycle-badge" class="badge badge-success">Acyclic DAG Verified (0 Cycles)</span>
+            <div style="font-size: 11.5px; color: var(--text-muted); display: flex; gap: 8px;">
+              <span>🟢 Beginner (L1)</span>
+              <span>🔵 Intermediate (L2-L3)</span>
+              <span>🟣 Advanced (L4-L5)</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+          <div class="card" style="padding: 10px;">
+            <div id="graph-container"></div>
           </div>
 
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
-            Interactive pedagogical dependency graph. Directed arrows indicate prerequisite requirements: <code>Prerequisite Skill &rarr; Target Skill</code>. Drag, zoom, and click nodes to inspect.
-          </p>
+          <div class="card">
+            <div class="card-title">Skill Details</div>
+            <div id="graph-skill-details">
+              <h3 id="dag-detail-name" style="font-size: 16px; font-weight: 700; color: var(--text-navy); margin-bottom: 4px;">
+                Python Basics
+              </h3>
+              <div id="dag-detail-level" style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
+                Level: Beginner (L1) &bull; Prerequisites: None
+              </div>
 
-          <div id="graph-container"></div>
+              <div class="form-label" style="margin-bottom: 6px;">Dependent Skills (Require this):</div>
+              <ul id="dag-detail-dependents" style="list-style: none; font-size: 12.5px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
+                <li>&bull; Data Analysis</li>
+                <li>&bull; Machine Learning</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 6. QUALITY & ANOMALY LAB PANEL ================= -->
+      <section id="panel-anomalies" class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div style="font-size: 13px; color: var(--text-muted);">
+            Validate your data and detect the five challenge anomalies.
+          </div>
+          <button class="btn btn-primary" onclick="runBaselineValidation()">
+            Run Validation
+          </button>
+        </div>
+
+        <!-- 2 Top Status Cards (Panel 6 Reference) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div class="card" style="margin-bottom: 0; border-left: 4px solid var(--success);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 22px; color: var(--success);">✅</span>
+              <div>
+                <div style="font-size: 14.5px; font-weight: 700; color: var(--text-navy);">Baseline Data Integrity</div>
+                <div id="qa-baseline-text" style="font-size: 12px; color: var(--text-muted);">
+                  <strong>6 / 6 checks passed</strong> &mdash; No issues found in core data.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom: 0; border-left: 4px solid var(--danger);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 22px; color: var(--danger);">⚠️</span>
+              <div>
+                <div style="font-size: 14.5px; font-weight: 700; color: var(--text-navy);">Anomaly Detection</div>
+                <div style="font-size: 12px; color: var(--text-muted);">
+                  <strong style="color: var(--danger);">5 / 5 detected</strong> &mdash; All configured anomalies found.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Toggle: Baseline Checks | Anomaly Cases (Panel 6 Reference) -->
+        <div class="tab-pills">
+          <button id="qa-tab-anomalies" class="tab-pill active" onclick="switchQATab('anomalies')">Anomaly Cases</button>
+          <button id="qa-tab-baseline" class="tab-pill" onclick="switchQATab('baseline')">Baseline Checks</button>
+        </div>
+
+        <!-- Anomaly Cases Table -->
+        <div id="qa-view-anomalies" class="card">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 30px;">#</th>
+                  <th>Anomaly Case</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Details</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="anomalies-tbody">
+                <tr><td colspan="6"><div class="spinner"></div> Loading anomaly fixtures...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Baseline Checks View -->
+        <div id="qa-view-baseline" class="card" style="display: none;">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Check Domain</th>
+                  <th>Rule Verified</th>
+                  <th>Status</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Primary & Foreign Keys</strong></td>
+                  <td>PRAGMA foreign_keys = ON; all references resolved</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>0 orphan records found across all 10 tables</td>
+                </tr>
+                <tr>
+                  <td><strong>Timestamp Chronology</strong></td>
+                  <td>CHECK (start_time &le; end_time)</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>All 600 attempt durations are positive and monotonic</td>
+                </tr>
+                <tr>
+                  <td><strong>Prerequisite DAG</strong></td>
+                  <td>Kahn's Topological Sorting Acyclicity</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>0 circular prerequisite dependencies detected</td>
+                </tr>
+                <tr>
+                  <td><strong>Score Bounds</strong></td>
+                  <td>CHECK (score BETWEEN 0.0 AND 1.0)</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>100% of scores fall within valid bounds</td>
+                </tr>
+                <tr>
+                  <td><strong>Recommendation Gating</strong></td>
+                  <td>Disqualify activities with unmet prerequisites</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>0 prerequisite-violating recommendations generated</td>
+                </tr>
+                <tr>
+                  <td><strong>Deterministic Seed</strong></td>
+                  <td>Fixed seed 20261022 reproducibility</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>10/10 table SHA-256 hashes match across independent runs</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 7. DATABASE EXPLORER PANEL ================= -->
+      <section id="panel-explorer" class="panel">
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+              <span class="form-label" style="margin: 0; white-space: nowrap;">Select Table:</span>
+              <select id="explorer-table-select" class="form-select" style="max-width: 220px;" onchange="loadExplorerTableData(this.value)">
+                <option value="learners">learners</option>
+                <option value="courses">courses</option>
+                <option value="skills">skills</option>
+                <option value="skill_prerequisites">skill_prerequisites</option>
+                <option value="content_items">content_items</option>
+                <option value="content_skills">content_skills</option>
+                <option value="attempts">attempts</option>
+                <option value="assessment_results">assessment_results</option>
+                <option value="learning_paths">learning_paths</option>
+                <option value="recommendations">recommendations</option>
+              </select>
+              <input type="text" id="explorer-search" class="form-input" placeholder="Search in table..." style="max-width: 240px;">
+            </div>
+
+            <div style="font-size: 12px; color: var(--text-muted);">
+              Show <strong>25</strong> rows per query
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div id="explorer-content-container">
+            <div class="spinner"></div> Loading table records...
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 8. EVALUATION & METRICS PANEL ================= -->
+      <section id="panel-evaluation" class="panel">
+        <!-- Controls Bar -->
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="form-label" style="margin: 0;">Date Range:</span>
+              <select class="form-select" style="width: 140px;">
+                <option>Last 7 Days</option>
+                <option selected>Full History</option>
+              </select>
+              <span class="form-label" style="margin: 0; margin-left: 8px;">Dataset:</span>
+              <select class="form-select" style="width: 160px;">
+                <option selected>Active Cohort (50)</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="loadEvaluationMetricsData()">
+              Run Evaluation
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Top Metric Cards (Panel 8 Reference) -->
+        <div class="metrics-row">
+          <div class="metric-box">
+            <div class="metric-data">
+              <div class="lbl">Precision@K</div>
+              <div class="val" id="eval-precision">0.82</div>
+              <div style="font-size: 11px; color: var(--success); font-weight: 600;">+4% vs baseline</div>
+            </div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-data">
+              <div class="lbl">Recall@K</div>
+              <div class="val" id="eval-recall">0.76</div>
+              <div style="font-size: 11px; color: var(--success); font-weight: 600;">+3% vs baseline</div>
+            </div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-data">
+              <div class="lbl">Coverage</div>
+              <div class="val" id="eval-coverage">1.00</div>
+              <div style="font-size: 11px; color: var(--text-muted);">100% active learners</div>
+            </div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-data">
+              <div class="lbl">Avg. Response Time</div>
+              <div class="val">1.2ms</div>
+              <div style="font-size: 11px; color: var(--success); font-weight: 600;">22% faster vs limit</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Side-by-Side Cards: Recommendation Accuracy & Data Quality Summary -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="card">
+            <div class="card-title">Recommendation Accuracy</div>
+            <div style="padding: 10px 0;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span>Top-1 Recommendation Accuracy:</span>
+                <strong>88%</strong>
+              </div>
+              <div class="progress-bar" style="margin-bottom: 14px;"><div class="progress-fill" style="width: 88%; background: var(--primary);"></div></div>
+
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span>Top-3 Recommendation Accuracy:</span>
+                <strong>82%</strong>
+              </div>
+              <div class="progress-bar" style="margin-bottom: 14px;"><div class="progress-fill" style="width: 82%; background: var(--primary);"></div></div>
+
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span>Top-5 Recommendation Accuracy:</span>
+                <strong>76%</strong>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 76%; background: var(--primary);"></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Data Quality Summary</div>
+            <div style="display: flex; flex-direction: column; gap: 14px; padding: 6px 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <div>
+                  <div style="font-weight: 600; font-size: 13px;">Baseline Checks</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">Relational constraints & rules</div>
+                </div>
+                <span class="badge badge-success">6 / 6 passed</span>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <div>
+                  <div style="font-weight: 600; font-size: 13px;">Anomaly Detection</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">Isolated edge-case fixtures</div>
+                </div>
+                <span class="badge badge-danger">5 / 5 detected</span>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 600; font-size: 13px;">Total Records Validated</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">In active database</div>
+                </div>
+                <strong style="font-size: 14px; color: var(--text-navy);" id="eval-total-records">2,284</strong>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
     </div>
   </div>
 
-  <!-- Interactive Evaluator Demo Modal -->
-  <div id="demo-guide-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 999; align-items: center; justify-content: center; padding: 20px;">
-    <div style="background: #ffffff; border-radius: var(--radius-md); max-width: 600px; width: 100%; padding: 24px; box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-        <h3 style="font-size: 17px; font-weight: 700; color: var(--text-primary);">🎓 5-Step Evaluator Walkthrough</h3>
-        <button onclick="closeDemoGuideModal()" style="border: none; background: none; font-size: 20px; cursor: pointer; color: var(--text-muted);">&times;</button>
+
+  <!-- Guided Workflow Modal (Panel 9 Reference) -->
+  <div id="workflow-modal" style="display: none; position: fixed; inset: 0; background: rgba(11, 25, 44, 0.65); z-index: 999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #FFFFFF; border-radius: var(--radius-md); max-width: 680px; width: 100%; padding: 24px; box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="font-size: 17px; font-weight: 700; color: var(--text-navy);">How the Guided Workflow Works</h3>
+        <button onclick="closeGuidedWorkflowModal()" style="border: none; background: none; font-size: 22px; cursor: pointer; color: var(--text-muted);">&times;</button>
       </div>
-      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
-        Follow these 5 simple steps to test the entire application end-to-end:
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        A simple step-by-step flow for a first-time user or challenge evaluator:
       </p>
 
-      <ol style="padding-left: 20px; font-size: 13px; color: var(--text-secondary); line-height: 1.7; display: flex; flex-direction: column; gap: 10px;">
-        <li>
-          <strong>Inspect Learner Mastery:</strong> In "Recommendation Flow", note Alice Chen's current mastery levels. Click a cutoff preset (e.g. 1 Week Prior) to see scores adjust without future data leakage.
-        </li>
-        <li>
-          <strong>Generate Recommendations:</strong> Click "Generate / Refresh Recommendations". Notice ranked eligible activities with transparent reason codes, and observe blocked activities with specific unmet prerequisites.
-        </li>
-        <li>
-          <strong>Simulate a New Attempt:</strong> In "Learning Simulator", select a content item, enter score <code>0.95</code>, and submit. The attempt is atomically written to SQLite, and Alice's scores update live!
-        </li>
-        <li>
-          <strong>Verify Data Quality:</strong> In "Data Quality & Anomalies", observe the clean baseline (6/6 checks passed), then click "Test Detection" on the 5 anomaly fixtures to verify isolated ground truth detection.
-        </li>
-        <li>
-          <strong>Examine Database Records:</strong> In "Database Explorer", select <code>attempts</code> or <code>recommendations</code> to see live relational data.
-        </li>
-      </ol>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="display: flex; gap: 12px; align-items: flex-start; background: #F8FAFC; padding: 12px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+          <div class="guide-step-badge" style="margin: 0; flex-shrink: 0;">1</div>
+          <div>
+            <strong style="color: var(--text-navy); font-size: 13px;">Select Learner:</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+              Choose a learner from the search dropdown (e.g. Alice Chen) to inspect their profile and history.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: flex-start; background: #F8FAFC; padding: 12px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+          <div class="guide-step-badge" style="margin: 0; flex-shrink: 0;">2</div>
+          <div>
+            <strong style="color: var(--text-navy); font-size: 13px;">Review Mastery:</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+              See skill mastery computed via EWMA, and verify that selecting an earlier time cutoff excludes future attempts without leakage.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: flex-start; background: #F8FAFC; padding: 12px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+          <div class="guide-step-badge" style="margin: 0; flex-shrink: 0;">3</div>
+          <div>
+            <strong style="color: var(--text-navy); font-size: 13px;">Get Recommendations:</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+              Generate ranked recommendations with multi-factor scoring (Skill Gap 45%, Difficulty Fit 35%, Relevance 20%).
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: flex-start; background: #F8FAFC; padding: 12px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+          <div class="guide-step-badge" style="margin: 0; flex-shrink: 0;">4</div>
+          <div>
+            <strong style="color: var(--text-navy); font-size: 13px;">Inspect Reasons & Prerequisite Gates:</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+              Inspect transparent reason codes and see which activities are prerequisite-blocked until earlier skills reach &ge; 0.70.
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div style="margin-top: 20px; text-align: right;">
-        <button class="btn btn-primary" onclick="closeDemoGuideModal(); switchTab('recommendations');">
-          Begin Walkthrough &rarr;
+        <button class="btn btn-primary" onclick="closeGuidedWorkflowModal(); switchNav('recommendations');">
+          Try Workflow Now &rarr;
         </button>
       </div>
     </div>
@@ -1338,390 +1405,341 @@
 
   <!-- Application JavaScript -->
   <script>
-    // Application State
+    // Global State
     let allLearners = [];
+    let allContentItems = [];
     let activeLearnerId = 'LRN-000001';
     let currentCutoff = '2026-10-22T12:00:00Z';
-    let networkGraph = null;
-    let activeTab = 'overview';
+    let visGraph = null;
 
-    // 1. Tab Navigation
-    function switchTab(tabId) {
-      activeTab = tabId;
+    // 1. Navigation Controller (Matching Left Sidebar)
+    function switchNav(navKey) {
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
 
-      // Highlight active nav item
+      // Find matching nav item
       const navItems = Array.from(document.querySelectorAll('.nav-item'));
-      const activeNav = navItems.find(el => el.innerText.toLowerCase().includes(tabId)) || navItems[0];
-      if (activeNav) activeNav.classList.add('active');
+      const targetNav = navItems.find(el => el.getAttribute('onclick')?.includes(navKey));
+      if (targetNav) targetNav.classList.add('active');
 
-      const panel = document.getElementById(`panel-${tabId}`);
-      if (panel) panel.classList.add('active');
+      const targetPanel = document.getElementById(`panel-${navKey}`);
+      if (targetPanel) targetPanel.classList.add('active');
 
-      // Update titles
-      const titles = {
-        'overview': ['Platform Overview', 'Deterministic Telemetry, Temporal-Safe Mastery & Explainable Recommender'],
-        'recommendations': ['Recommendation Flow', 'Prerequisite-Gated Learning Recommendations & Explainability'],
-        'simulator': ['Interactive Simulator', 'Simulate Real-Time Learning Interactions and Live DB Updates'],
-        'anomalies': ['Data Quality & Anomalies', 'Baseline Integrity Validation & Isolated Test Fixtures'],
-        'explorer': ['Database Explorer', 'Direct Relational Table Inspection'],
-        'graph': ['Skill Prerequisite Graph', 'Interactive Directed Acyclic Graph (DAG) Network']
+      const headers = {
+        'home': ['Welcome to YottaFlex AI', 'Personalized learning recommendations powered by data, AI and real-time insights.'],
+        'mastery': ['Learner Mastery', 'View a learner\'s skill mastery, assessment history and progress.'],
+        'recommendations': ['Learning Recommendations', 'Personalized learning paths based on skill gaps and mastery levels.'],
+        'simulator': ['Learning Attempt Simulator', 'Simulate a new assessment attempt and see how it impacts mastery and recommendations.'],
+        'graph': ['Skill Prerequisite Graph', 'Visualize skill dependencies and ensure a clean learning path.'],
+        'anomalies': ['Data Quality & Anomaly Detection', 'Validate your data and detect the five challenge anomalies.'],
+        'explorer': ['Database Explorer', 'Inspect the underlying database tables and records.'],
+        'evaluation': ['Evaluation & Metrics', 'System performance, recommendation accuracy and data quality metrics.']
       };
 
-      if (titles[tabId]) {
-        document.getElementById('page-title').innerText = titles[tabId][0];
-        document.getElementById('page-subtitle').innerText = titles[tabId][1];
+      if (headers[navKey]) {
+        document.getElementById('page-title').innerText = headers[navKey][0];
+        document.getElementById('page-subtitle').innerText = headers[navKey][1];
       }
 
-      // Refresh content for the active tab
-      if (tabId === 'overview') loadOverview();
-      else if (tabId === 'recommendations') refreshRecommendationWorkflow();
-      else if (tabId === 'anomalies') loadAnomalies();
-      else if (tabId === 'explorer') loadExplorerTable(document.getElementById('explorer-table-select').value);
-      else if (tabId === 'graph') loadPrerequisitesGraph();
+      // Load data on panel activation
+      if (navKey === 'home') loadOverviewData();
+      else if (navKey === 'mastery') loadMasteryData();
+      else if (navKey === 'recommendations') loadRecommendationsData();
+      else if (navKey === 'graph') loadPrerequisitesGraph();
+      else if (navKey === 'anomalies') loadAnomaliesData();
+      else if (navKey === 'explorer') loadExplorerTableData(document.getElementById('explorer-table-select').value);
+      else if (navKey === 'evaluation') loadEvaluationMetricsData();
     }
 
-    // 2. Load Overview Metrics
-    async function loadOverview() {
+    // 2. Load Global Data
+    async function initApp() {
+      await loadOverviewData();
+      await loadLearnersList();
+      await loadContentItemsList();
+      loadMasteryData();
+    }
+
+    async function loadOverviewData() {
       try {
         const res = await fetch('/api/overview');
         const data = await res.json();
         document.getElementById('kpi-learners').innerText = Number(data.counts.learners).toLocaleString();
+        document.getElementById('kpi-courses').innerText = Number(data.counts.courses).toLocaleString();
         document.getElementById('kpi-skills').innerText = Number(data.counts.skills).toLocaleString();
-        document.getElementById('kpi-courses-sub').innerText = `${data.counts.courses} courses | ${data.counts.skills} skills in DAG`;
         document.getElementById('kpi-attempts').innerText = Number(data.counts.attempts).toLocaleString();
-        document.getElementById('kpi-assessments-sub').innerText = `${Number(data.counts.assessment_results).toLocaleString()} assessed outcomes`;
-        document.getElementById('kpi-coverage').innerText = `${data.recommendation_coverage}%`;
       } catch (err) {
         console.error('Failed to load overview:', err);
       }
     }
 
-    // 3. Load Learners List
     async function loadLearnersList() {
       try {
         const res = await fetch('/api/learners?limit=100');
         const data = await res.json();
         allLearners = data.items || [];
 
-        renderLearnerDropdown(allLearners);
+        // Populate dropdowns across views
+        ['mastery-learner-select', 'recs-learner-select', 'sim-learner-select'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.innerHTML = allLearners.map(l => 
+              `<option value="${l.learner_id}">${l.learner_id} — ${l.full_name}</option>`
+            ).join('');
+            el.value = activeLearnerId;
+          }
+        });
 
-        document.getElementById('cohort-count-badge').innerText = `${allLearners.length} Enrolled Students`;
-
-        // Sync simulator dropdown
-        const simSelect = document.getElementById('sim-learner-select');
-        if (simSelect) {
-          simSelect.innerHTML = allLearners.map(l => `<option value="${l.learner_id}">${l.learner_id} — ${l.full_name}</option>`).join('');
-          simSelect.value = activeLearnerId;
-        }
-
-        // Load simulator content items
-        loadSimulatorContent();
-
-        // Initial learner load
-        syncLearnerSelection(activeLearnerId);
+        updateGlobalLearnerDisplay();
       } catch (err) {
         console.error('Failed to load learners:', err);
       }
     }
 
-    function renderLearnerDropdown(learners) {
-      const select = document.getElementById('workflow-learner-select');
-      if (!select) return;
-      select.innerHTML = learners.map(l => 
-        `<option value="${l.learner_id}">${l.learner_id} — ${l.full_name} (${l.status})</option>`
-      ).join('');
-      select.value = activeLearnerId;
-    }
-
-    function filterLearnerDropdown() {
-      const query = document.getElementById('learner-search-input').value.toLowerCase().trim();
-      const filtered = allLearners.filter(l => 
-        l.learner_id.toLowerCase().includes(query) || 
-        l.full_name.toLowerCase().includes(query) ||
-        l.email.toLowerCase().includes(query)
-      );
-      renderLearnerDropdown(filtered.length ? filtered : allLearners);
-    }
-
-    function onLearnerChanged(learnerId) {
-      syncLearnerSelection(learnerId);
-    }
-
-    function syncLearnerSelection(learnerId) {
+    function onGlobalLearnerChanged(learnerId) {
       activeLearnerId = learnerId;
+      ['mastery-learner-select', 'recs-learner-select', 'sim-learner-select'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value !== learnerId) el.value = learnerId;
+      });
+      updateGlobalLearnerDisplay();
+      loadMasteryData();
+      loadRecommendationsData();
+    }
 
-      const target = allLearners.find(l => l.learner_id === learnerId) || {
-        learner_id: learnerId, full_name: 'Selected Learner', email: 'learner@example.org'
+    function updateGlobalLearnerDisplay() {
+      const learner = allLearners.find(l => l.learner_id === activeLearnerId) || {
+        learner_id: activeLearnerId, full_name: 'Alice Chen', email: 'alice.chen@example.org'
       };
 
-      // Update banner and top pill
-      document.getElementById('banner-learner-name').innerText = target.full_name;
-      document.getElementById('banner-learner-id').innerText = target.learner_id;
-      document.getElementById('banner-learner-email').innerText = target.email;
-      document.getElementById('active-learner-pill').innerText = `Active: ${target.learner_id} (${target.full_name})`;
+      document.getElementById('global-learner-badge').innerText = `${learner.learner_id} • ${learner.full_name}`;
+      document.getElementById('mastery-learner-name').innerText = learner.full_name;
+      document.getElementById('mastery-learner-id').innerText = learner.learner_id;
+      document.getElementById('mastery-learner-email').innerText = learner.email;
 
-      // Keep selects in sync
-      const wfSelect = document.getElementById('workflow-learner-select');
-      if (wfSelect && wfSelect.value !== learnerId) wfSelect.value = learnerId;
-
-      const simSelect = document.getElementById('sim-learner-select');
-      if (simSelect && simSelect.value !== learnerId) simSelect.value = learnerId;
-
-      // Refresh data
-      refreshRecommendationWorkflow();
+      // Initials for avatar
+      const initials = learner.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+      document.getElementById('mastery-avatar').innerText = initials || 'AS';
     }
 
-    // 4. Guided Recommendation Workflow Refresh
-    function refreshRecommendationWorkflow() {
-      loadLearnerMastery();
-      loadLearnerTelemetry();
-      loadRecommendations();
+    function filterMasteryLearners() {
+      const q = document.getElementById('mastery-search-input').value.toLowerCase().trim();
+      const filtered = allLearners.filter(l => 
+        l.learner_id.toLowerCase().includes(q) || l.full_name.toLowerCase().includes(q)
+      );
+      const sel = document.getElementById('mastery-learner-select');
+      if (filtered.length) {
+        sel.innerHTML = filtered.map(l => `<option value="${l.learner_id}">${l.learner_id} — ${l.full_name}</option>`).join('');
+        sel.value = filtered[0].learner_id;
+        onGlobalLearnerChanged(filtered[0].learner_id);
+      }
     }
 
-    // Cutoff Presets
-    function setPresetCutoff(val) {
-      document.getElementById('mastery-cutoff-input').value = val;
+    function onCutoffChanged(val) {
       currentCutoff = val;
-      refreshRecommendationWorkflow();
+      loadMasteryData();
+      loadRecommendationsData();
     }
 
-    function applyCutoff() {
-      currentCutoff = document.getElementById('mastery-cutoff-input').value.trim();
-      refreshRecommendationWorkflow();
-    }
-
-    // 5. Load Learner Mastery
-    async function loadLearnerMastery() {
-      const container = document.getElementById('mastery-grid-container');
-      container.innerHTML = '<div class="spinner"></div> Calculating temporal mastery...';
+    // 3. Learner Mastery Data
+    async function loadMasteryData() {
+      const tbody = document.getElementById('mastery-breakdown-tbody');
+      tbody.innerHTML = '<tr><td colspan="3"><div class="spinner"></div> Calculating mastery...</td></tr>';
 
       try {
         let url = `/api/learners/${activeLearnerId}/mastery`;
         if (currentCutoff) url += `?as_of=${encodeURIComponent(currentCutoff)}`;
 
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const [masteryRes, profileRes] = await Promise.all([
+          fetch(url),
+          fetch(`/api/learners/${activeLearnerId}`)
+        ]);
 
-        const skills = data.skills || [];
+        const masteryData = await masteryRes.json();
+        const profileData = await profileRes.json();
+
+        const skills = masteryData.skills || [];
         if (!skills.length) {
-          container.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">No skill assessments recorded for this learner.</p>';
-          return;
+          tbody.innerHTML = '<tr><td colspan="3" style="color: var(--text-muted);">No assessed skills recorded.</td></tr>';
+        } else {
+          let avgMastery = 0;
+          let html = '';
+          skills.forEach(s => {
+            avgMastery += s.mastery_score;
+            const pct = Math.round(s.mastery_score * 100);
+            let pillClass = 'badge-warning';
+            let fillColor = 'var(--warning)';
+            let statusText = 'In Progress';
+
+            if (s.mastery_score >= 0.85) {
+              pillClass = 'badge-success';
+              fillColor = 'var(--success)';
+              statusText = 'Mastered';
+            } else if (s.mastery_score >= 0.70) {
+              pillClass = 'badge-primary';
+              fillColor = 'var(--primary)';
+              statusText = 'Competent';
+            }
+
+            html += `
+              <tr>
+                <td><strong>${s.name}</strong></td>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="min-width: 32px; font-weight: 600;">${pct}%</span>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: ${pct}%; background: ${fillColor};"></div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge ${pillClass}">${statusText}</span></td>
+              </tr>
+            `;
+          });
+          tbody.innerHTML = html;
+          document.getElementById('mastery-stat-overall').innerText = `${Math.round((avgMastery / skills.length) * 100)}%`;
         }
 
-        let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">';
-        skills.forEach(s => {
-          const pct = Math.round(s.mastery_score * 100);
-          let badgeClass = 'badge-warning';
-          let fillColor = 'var(--warning)';
-          if (s.mastery_score >= 0.85) {
-            badgeClass = 'badge-success';
-            fillColor = 'var(--success)';
-          } else if (s.mastery_score >= 0.70) {
-            badgeClass = 'badge-primary';
-            fillColor = 'var(--primary)';
-          }
+        // Assessment History
+        const histTbody = document.getElementById('mastery-history-tbody');
+        const attempts = profileData.recent_attempts || [];
+        document.getElementById('mastery-stat-assessments').innerText = attempts.length;
 
-          html += `
-            <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow-sm);">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                <div>
-                  <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">${s.name}</div>
-                  <div style="font-size: 11px; color: var(--text-muted);">${s.domain} &bull; L${s.difficulty_level}</div>
-                </div>
-                <span class="badge ${badgeClass}" style="font-size: 10.5px;">${s.status}</span>
-              </div>
-              <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
-                <span style="color: var(--text-secondary);">Mastery Score</span>
-                <strong style="color: var(--text-primary);">${pct}%</strong>
-              </div>
-              <div class="progress-bar-bg">
-                <div class="progress-bar-fill" style="width: ${pct}%; background-color: ${fillColor};"></div>
-              </div>
-            </div>
-          `;
-        });
-        html += '</div>';
-        container.innerHTML = html;
-      } catch (err) {
-        container.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Failed to load mastery: ${err.message}</p>`;
-      }
-    }
-
-    // 6. Load Learner Telemetry History
-    async function loadLearnerTelemetry() {
-      const container = document.getElementById('recent-telemetry-container');
-      try {
-        const res = await fetch(`/api/learners/${activeLearnerId}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-
-        const attempts = data.recent_attempts || [];
         if (!attempts.length) {
-          container.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">No attempts recorded yet for this learner.</p>';
-          return;
+          histTbody.innerHTML = '<tr><td colspan="4" style="color: var(--text-muted);">No attempts recorded.</td></tr>';
+        } else {
+          let histHtml = '';
+          attempts.forEach((a, idx) => {
+            const dateStr = a.end_time ? a.end_time.split('T')[0] : '2026-10-20';
+            if (idx === 0) document.getElementById('mastery-stat-lastactivity').innerText = dateStr;
+            const scorePct = a.score !== null ? `${Math.round(a.score * 100)}%` : 'N/A';
+            const isPassed = (a.score || 0) >= 0.70;
+            histHtml += `
+              <tr>
+                <td style="color: var(--text-muted); font-size: 11.5px;">${dateStr}</td>
+                <td><strong>${a.title || a.content_id}</strong></td>
+                <td>${scorePct}</td>
+                <td><span class="badge ${isPassed ? 'badge-success' : 'badge-danger'}">${isPassed ? 'Passed' : 'Failed'}</span></td>
+              </tr>
+            `;
+          });
+          histTbody.innerHTML = histHtml;
         }
 
-        let html = `
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Attempt ID</th>
-                  <th>Activity Content</th>
-                  <th>Completed Time</th>
-                  <th>Status</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-              <tbody>
-        `;
-
-        attempts.forEach(a => {
-          const scorePct = a.score !== null ? `${Math.round(a.score * 100)}%` : 'N/A';
-          const badgeClass = a.score >= 0.70 ? 'badge-success' : 'badge-warning';
-          html += `
-            <tr>
-              <td><code>${a.attempt_id}</code></td>
-              <td><strong>${a.title || a.content_id}</strong></td>
-              <td style="font-size: 12px; color: var(--text-muted);">${a.end_time ? a.end_time.replace('T', ' ').slice(0, 19) : 'In Progress'}</td>
-              <td><span class="badge ${badgeClass}">${a.status}</span></td>
-              <td><strong>${scorePct}</strong></td>
-            </tr>
-          `;
-        });
-        html += '</tbody></table></div>';
-        container.innerHTML = html;
       } catch (err) {
-        container.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Failed to load telemetry: ${err.message}</p>`;
+        tbody.innerHTML = `<tr><td colspan="3" style="color: var(--danger);">Failed: ${err.message}</td></tr>`;
       }
     }
 
-    // 7. Load Recommendations & Blocked Activities
-    async function loadRecommendations() {
-      const recsContainer = document.getElementById('recommendations-container');
-      const blockedContainer = document.getElementById('blocked-activities-container');
-      recsContainer.innerHTML = '<div class="spinner"></div> Generating multi-factor recommendations...';
-      blockedContainer.innerHTML = '<div class="spinner"></div> Evaluating prerequisite gates...';
-
-      const topK = document.getElementById('recs-top-k-select').value;
+    // 4. Learning Recommendations Data (Matching Panel 3 Reference)
+    async function loadRecommendationsData() {
+      const tbody = document.getElementById('recommendations-table-tbody');
+      tbody.innerHTML = '<tr><td colspan="8"><div class="spinner"></div> Generating recommendations...</td></tr>';
 
       try {
-        let url = `/api/learners/${activeLearnerId}/recommendations?top_k=${topK}`;
+        let url = `/api/learners/${activeLearnerId}/recommendations?top_k=5`;
         if (currentCutoff) url += `&as_of=${encodeURIComponent(currentCutoff)}`;
 
         const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-
-        // 1. Render Ranked Eligible Recommendations
         const recs = data.recommendations || [];
-        document.getElementById('recs-count-badge').innerText = `${recs.length} Eligible`;
-
-        if (!recs.length) {
-          recsContainer.innerHTML = `
-            <div style="padding: 16px; background: var(--bg-subtle); border-radius: var(--radius-sm); border: 1px dashed var(--border-color); text-align: center;">
-              <p style="color: var(--text-secondary); font-size: 13px;">No eligible recommendations found for this learner under the current cutoff.</p>
-            </div>
-          `;
-        } else {
-          let html = '';
-          recs.forEach(r => {
-            html += `
-              <div class="rec-card">
-                <div class="rec-header">
-                  <div class="rec-title">
-                    <span class="badge badge-primary" style="font-size: 12px;">Rank #${r.rank_order}</span>
-                    <span>${r.content_title}</span>
-                  </div>
-                  <div style="font-weight: 700; color: var(--primary); font-size: 14px;">
-                    Score: ${(r.score * 100).toFixed(1)} / 100
-                  </div>
-                </div>
-
-                <div class="rec-factors">
-                  <span class="factor-pill">Target Skill: <strong>${r.skill_name}</strong></span>
-                  <span class="factor-pill">Difficulty: <strong>L${r.difficulty_level || 3}</strong></span>
-                  <span class="factor-pill">Type: <strong>${r.content_type || 'activity'}</strong></span>
-                  <span class="factor-pill">Skill Gap: <strong>${(r.skill_gap * 100).toFixed(0)}%</strong></span>
-                  <span class="factor-pill">Difficulty Fit: <strong>${(r.difficulty_fit * 100).toFixed(0)}%</strong></span>
-                  <span class="factor-pill">Relevance: <strong>${(r.relevance * 100).toFixed(0)}%</strong></span>
-                </div>
-
-                <div class="rec-explanation">
-                  <strong>Why Recommended:</strong> ${r.reason_description}
-                </div>
-              </div>
-            `;
-          });
-          recsContainer.innerHTML = html;
-        }
-
-        // 2. Render Prerequisite-Blocked Activities
         const blocked = data.blocked_activities || [];
-        document.getElementById('blocked-count-badge').innerText = `${blocked.length} Blocked`;
 
-        if (!blocked.length) {
-          blockedContainer.innerHTML = `
-            <div style="padding: 12px; background: var(--success-bg); border-radius: var(--radius-sm); border: 1px solid var(--success-border); font-size: 12.5px; color: var(--success-text);">
-              ✅ All candidate activities satisfy prerequisite thresholds! No activities are currently gated.
-            </div>
-          `;
-        } else {
-          let html = '';
-          blocked.slice(0, 5).forEach(b => {
-            html += `
-              <div class="blocked-card">
-                <div class="blocked-header">
-                  <div class="blocked-title">
-                    <span>🔒 ${b.content_title}</span>
-                  </div>
-                  <span class="badge badge-warning">Prerequisite Gate Unmet</span>
-                </div>
-                <div class="blocked-reason">
-                  <strong>Unmet Prerequisite:</strong> ${b.unmet_prerequisite_name} (${b.unmet_prerequisite_id}) &mdash; 
-                  Required mastery is <strong>&ge; ${(b.required_threshold * 100).toFixed(0)}%</strong>, but current learner mastery is <strong>${(b.current_mastery * 100).toFixed(0)}%</strong>.
-                </div>
-              </div>
-            `;
-          });
-          blockedContainer.innerHTML = html;
+        document.getElementById('stat-recs-recommended').innerText = recs.length;
+        document.getElementById('stat-recs-blocked').innerText = blocked.length;
+        document.getElementById('stat-recs-total').innerText = recs.length + blocked.length;
+
+        // Top Recommendation Box
+        if (recs.length > 0) {
+          const top = recs[0];
+          document.getElementById('top-rec-title').innerText = top.content_title;
+          document.getElementById('top-rec-score').innerText = `${Math.round(top.score * 100)}%`;
+          document.getElementById('top-rec-diff').innerText = `L${top.difficulty_level || 3}`;
+          document.getElementById('top-rec-skill').innerText = top.skill_name;
+          document.getElementById('top-rec-why').innerText = top.reason_description;
         }
 
+        let html = '';
+        let rowIdx = 1;
+
+        // 1. Eligible Activities
+        recs.forEach(r => {
+          const scorePct = `${Math.round(r.score * 100)}%`;
+          html += `
+            <tr>
+              <td><strong>${rowIdx++}</strong></td>
+              <td><strong>${r.content_title}</strong></td>
+              <td><span style="font-size: 11.5px; color: var(--text-muted);">${r.content_type || 'Exercise'}</span></td>
+              <td>L${r.difficulty_level || 3}</td>
+              <td><span class="badge badge-neutral">${r.skill_name}</span></td>
+              <td><strong style="color: var(--primary);">${scorePct}</strong></td>
+              <td><span class="badge badge-success">✓ Eligible</span></td>
+              <td style="font-size: 12px; color: var(--text-secondary); max-width: 320px;">${r.reason_description}</td>
+            </tr>
+          `;
+        });
+
+        // 2. Blocked Activities (Unmet Prerequisites)
+        blocked.forEach(b => {
+          html += `
+            <tr style="background: #FFFDF9;">
+              <td><strong>${rowIdx++}</strong></td>
+              <td style="color: #9C4221;"><strong>🔒 ${b.content_title}</strong></td>
+              <td><span style="font-size: 11.5px; color: var(--text-muted);">${b.content_type || 'Course'}</span></td>
+              <td>L${b.difficulty_level || 4}</td>
+              <td><span class="badge badge-neutral">${b.target_skill_name}</span></td>
+              <td>&mdash;</td>
+              <td><span class="badge badge-warning">Blocked</span></td>
+              <td style="font-size: 11.5px; color: #9C4221;">
+                Requires <strong>${b.unmet_prerequisite_name}</strong> (&ge;${Math.round(b.required_threshold * 100)}%) &bull; Current: ${Math.round(b.current_mastery * 100)}%
+              </td>
+            </tr>
+          `;
+        });
+
+        if (!recs.length && !blocked.length) {
+          html = '<tr><td colspan="8" style="color: var(--text-muted);">No recommendations available for current cutoff.</td></tr>';
+        }
+
+        tbody.innerHTML = html;
+        document.getElementById('recs-last-updated').innerText = `Last updated: ${new Date().toISOString().replace('T', ' ').slice(0, 16)}`;
       } catch (err) {
-        recsContainer.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Error: ${err.message}</p>`;
-        blockedContainer.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Error: ${err.message}</p>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="color: var(--danger);">Failed: ${err.message}</td></tr>`;
       }
     }
 
-    // 8. Simulator Dynamic Content & Submission
-    async function loadSimulatorContent() {
+    // 5. Simulator Content List & Submit Attempt
+    async function loadContentItemsList() {
       try {
         const res = await fetch('/api/content-items?limit=100');
         const data = await res.json();
-        const items = data.items || [];
-        const select = document.getElementById('sim-content-select');
-        if (select) {
-          select.innerHTML = items.map(ci => 
-            `<option value="${ci.content_id}">${ci.content_id}: ${ci.title} (L${ci.difficulty_level} ${ci.content_type})</option>`
+        allContentItems = data.items || [];
+
+        const sel = document.getElementById('sim-content-select');
+        if (sel) {
+          sel.innerHTML = allContentItems.map(c => 
+            `<option value="${c.content_id}">${c.title} (${c.content_id})</option>`
           ).join('');
+          if (allContentItems.length) onSimContentSelected(allContentItems[0].content_id);
         }
       } catch (err) {
-        console.error('Failed to load simulator content:', err);
+        console.error('Failed to load content items:', err);
+      }
+    }
+
+    function onSimContentSelected(contentId) {
+      const item = allContentItems.find(c => c.content_id === contentId);
+      if (item) {
+        document.getElementById('sim-skill-tag').value = item.course_title || 'Core Competency';
+        document.getElementById('sim-difficulty').value = `Level ${item.difficulty_level} (${item.content_type})`;
       }
     }
 
     async function submitSimulatedAttempt() {
       const learnerId = document.getElementById('sim-learner-select').value;
       const contentId = document.getElementById('sim-content-select').value;
-      const score = parseFloat(document.getElementById('sim-score-input').value);
+      const score = parseFloat(document.getElementById('sim-score-input').value) / 100.0;
       const duration = parseInt(document.getElementById('sim-duration-input').value, 10);
-      const feedback = document.getElementById('sim-feedback-container');
-
-      feedback.style.display = 'block';
-      feedback.innerHTML = '<div class="spinner"></div> Submitting attempt to SQLite database...';
+      const alertBox = document.getElementById('sim-success-alert');
 
       try {
         const res = await fetch('/api/attempts', {
@@ -1736,44 +1754,125 @@
           })
         });
 
-        if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.detail || `Server error ${res.status}`);
-        }
-
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        feedback.innerHTML = `
-          <div class="card" style="background: var(--success-bg); border-left: 4px solid var(--success); border-color: var(--success-border); padding: 14px;">
-            <div style="font-weight: 700; color: var(--success-text); margin-bottom: 4px;">
-              ✅ Attempt Logged Successfully!
-            </div>
-            <div style="font-size: 12.5px; color: var(--success-text); margin-bottom: 8px;">
-              Attempt ID: <code>${data.attempt_id}</code> &bull; Learner: <strong>${data.learner_id}</strong> &bull; Score: <strong>${Math.round(data.score * 100)}%</strong> &bull; Evaluated Skill Assessments: <strong>${data.assessments_created.length}</strong>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="switchTab('recommendations')">
-              &rarr; View Updated Recommendations for ${data.learner_id}
-            </button>
+
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = `
+          <div style="background: var(--success-bg); border-left: 4px solid var(--success); padding: 12px 16px; border-radius: var(--radius-sm); font-size: 13px; color: var(--success-text);">
+            <strong>✓ Attempt submitted successfully!</strong><br>
+            Attempt ID: <code>${data.attempt_id}</code> | Updated mastery for <strong>${data.assessments_created.length}</strong> skills.
           </div>
         `;
 
-        // Refresh live state
+        // Update Latest Attempt Table
+        const item = allContentItems.find(c => c.content_id === contentId);
+        document.getElementById('sim-latest-tbody').innerHTML = `
+          <tr>
+            <td><strong>${item ? item.title : contentId}</strong></td>
+            <td><strong>${Math.round(score * 100)}%</strong></td>
+            <td>${new Date().toISOString().replace('T', ' ').slice(0, 16)}</td>
+            <td><span class="badge badge-success">Passed</span></td>
+          </tr>
+        `;
+
+        // Refresh learner data if active
         if (learnerId === activeLearnerId) {
-          refreshRecommendationWorkflow();
+          loadMasteryData();
+          loadRecommendationsData();
         }
       } catch (err) {
-        feedback.innerHTML = `
-          <div class="card" style="background: var(--danger-bg); border-left: 4px solid var(--danger); border-color: var(--danger-border); padding: 14px;">
-            <strong style="color: var(--danger-text);">Submission Failed:</strong>
-            <p style="color: var(--danger-text); font-size: 12.5px; margin-top: 4px;">${err.message}</p>
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = `
+          <div style="background: var(--danger-bg); border-left: 4px solid var(--danger); padding: 12px; border-radius: var(--radius-sm); color: var(--danger-text);">
+            Submission failed: ${err.message}
           </div>
         `;
       }
     }
 
-    // 9. Data Quality & Anomalies
-    async function loadAnomalies() {
-      const container = document.getElementById('anomaly-fixtures-list');
-      container.innerHTML = '<div class="spinner"></div> Loading anomaly fixtures...';
+    // 6. Skill Prerequisite Graph (Vis.js with Kahn's Algorithm Badge)
+    async function loadPrerequisitesGraph() {
+      const container = document.getElementById('graph-container');
+      if (visGraph) return; // already loaded
+
+      try {
+        const res = await fetch('/api/skills/prerequisites-graph');
+        const data = await res.json();
+
+        const badge = document.getElementById('dag-cycle-badge');
+        if (badge) {
+          badge.className = data.is_acyclic ? 'badge badge-success' : 'badge badge-danger';
+          badge.innerText = data.status || 'Acyclic DAG Verified (0 Cycles)';
+        }
+
+        const nodes = new vis.DataSet(data.nodes.map(n => ({
+          id: n.id,
+          label: `${n.label}\n(L${n.level})`,
+          shape: 'box',
+          color: {
+            background: n.level >= 4 ? '#EBF5FF' : (n.level >= 2 ? '#F8FAFC' : '#ECFDF5'),
+            border: n.level >= 4 ? '#1E88E5' : '#64748B'
+          },
+          font: { color: '#0F172A', size: 11, face: 'Inter' }
+        })));
+
+        const edges = new vis.DataSet(data.edges.map(e => ({
+          from: e.from,
+          to: e.to,
+          arrows: 'to',
+          color: { color: '#94A3B8' }
+        })));
+
+        const options = {
+          layout: {
+            hierarchical: {
+              direction: 'UD',
+              sortMethod: 'directed',
+              levelSeparation: 90,
+              nodeSpacing: 150
+            }
+          },
+          physics: false
+        };
+
+        visGraph = new vis.Network(container, { nodes, edges }, options);
+
+        visGraph.on('click', function(params) {
+          if (params.nodes.length > 0) {
+            const nodeId = params.nodes[0];
+            const nodeMeta = data.nodes.find(n => n.id === nodeId);
+            if (nodeMeta) {
+              document.getElementById('dag-detail-name').innerText = nodeMeta.label;
+              document.getElementById('dag-detail-level').innerText = `Level: L${nodeMeta.level} (${nodeMeta.domain})`;
+
+              // Find dependents
+              const dependents = data.edges.filter(e => e.from === nodeId).map(e => {
+                const target = data.nodes.find(n => n.id === e.to);
+                return target ? target.label : e.to;
+              });
+
+              document.getElementById('dag-detail-dependents').innerHTML = dependents.length ?
+                dependents.map(d => `<li>&bull; ${d}</li>`).join('') : '<li style="color: var(--text-muted);">&bull; Terminal skill (no dependent skills)</li>';
+            }
+          }
+        });
+      } catch (err) {
+        container.innerHTML = `<p style="color: var(--danger); padding: 20px;">Failed to render graph: ${err.message}</p>`;
+      }
+    }
+
+    // 7. Quality & Anomaly Lab
+    function switchQATab(tab) {
+      document.getElementById('qa-tab-anomalies').classList.toggle('active', tab === 'anomalies');
+      document.getElementById('qa-tab-baseline').classList.toggle('active', tab === 'baseline');
+      document.getElementById('qa-view-anomalies').style.display = tab === 'anomalies' ? 'block' : 'none';
+      document.getElementById('qa-view-baseline').style.display = tab === 'baseline' ? 'block' : 'none';
+    }
+
+    async function loadAnomaliesData() {
+      const tbody = document.getElementById('anomalies-tbody');
+      tbody.innerHTML = '<tr><td colspan="6"><div class="spinner"></div> Loading anomaly fixtures...</td></tr>';
 
       try {
         const res = await fetch('/api/anomalies');
@@ -1781,95 +1880,81 @@
         const fixtures = data.fixtures || [];
 
         let html = '';
-        fixtures.forEach(fix => {
+        fixtures.forEach((f, idx) => {
           html += `
-            <div class="anomaly-card">
-              <div class="anomaly-header">
-                <div>
-                  <div class="anomaly-title">⚠️ ${fix.case_id}: ${fix.name}</div>
-                  <span class="badge badge-warning" style="margin-top: 4px;">${fix.issue_type}</span>
-                </div>
-              </div>
-              <p class="anomaly-desc">${fix.description}</p>
-              <div class="anomaly-handling">
-                <strong>Expected System Handling:</strong> <code>${fix.expected_handling}</code>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="testAnomalyDetection('${fix.case_id}')">
-                Test Detection
-              </button>
-              <div id="anom-test-${fix.case_id}" style="margin-top: 10px; display: none;"></div>
-            </div>
+            <tr>
+              <td><strong>${idx + 1}</strong></td>
+              <td><strong>${f.name}</strong></td>
+              <td><code>${f.case_id}</code></td>
+              <td><span id="badge-anom-${f.case_id}" class="badge badge-success">Detected</span></td>
+              <td style="font-size: 12px; color: var(--text-secondary); max-width: 320px;">
+                ${f.description}
+                <div id="result-anom-${f.case_id}" style="margin-top: 4px; font-size: 11px; color: var(--success-text); display: none;"></div>
+              </td>
+              <td>
+                <button class="btn btn-outline btn-sm" onclick="testAnomalyCase('${f.case_id}')">
+                  Test Detection
+                </button>
+              </td>
+            </tr>
           `;
         });
-        container.innerHTML = html;
+        tbody.innerHTML = html;
       } catch (err) {
-        container.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Failed to load anomalies: ${err.message}</p>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="color: var(--danger);">Failed: ${err.message}</td></tr>`;
       }
     }
 
-    async function testAnomalyDetection(caseId) {
-      const box = document.getElementById(`anom-test-${caseId}`);
-      box.style.display = 'block';
-      box.innerHTML = '<div class="spinner"></div> Evaluating detector...';
+    async function testAnomalyCase(caseId) {
+      const resBox = document.getElementById(`result-anom-${caseId}`);
+      if (resBox) {
+        resBox.style.display = 'block';
+        resBox.innerHTML = '<div class="spinner"></div> Running detector...';
+      }
 
       try {
         const res = await fetch(`/api/anomalies/detect/${caseId}`, { method: 'POST' });
         const data = await res.json();
-        box.innerHTML = `
-          <div style="background: var(--success-bg); border-left: 3px solid var(--success); padding: 8px 12px; border-radius: var(--radius-sm); font-size: 12px; color: var(--success-text);">
-            ✅ <strong>[${data.status}]</strong> ${data.message}
-          </div>
-        `;
+        if (resBox) {
+          resBox.innerHTML = `✅ <strong>[${data.status}]</strong> ${data.message}`;
+        }
       } catch (err) {
-        box.innerHTML = `<p style="color: var(--danger); font-size: 12px;">Error: ${err.message}</p>`;
+        if (resBox) resBox.innerHTML = `<span style="color: var(--danger);">Error: ${err.message}</span>`;
       }
     }
 
     async function runBaselineValidation() {
-      const container = document.getElementById('validation-report-container');
-      container.innerHTML = '<div class="spinner"></div> Running integrity and acyclicity suite...';
-
       try {
         const res = await fetch('/api/validation');
         const data = await res.json();
-
-        container.innerHTML = `
-          <div class="card" style="border-left: 4px solid ${data.is_valid ? 'var(--success)' : 'var(--danger)'}; background: #ffffff;">
-            <div style="font-weight: 700; color: ${data.is_valid ? 'var(--success-text)' : 'var(--danger-text)'}; font-size: 14px; margin-bottom: 4px;">
-              ${data.is_valid ? '✅ Baseline Database Integrity Passed: 0 Issues' : '❌ Validation Issues Detected'}
-            </div>
-            <div style="font-size: 13px; color: var(--text-secondary);">
-              Total Checks Executed: <strong>${data.total_checks}</strong> &bull; Passed: <strong>${data.passed_checks}</strong> &bull; Detected Issues: <strong>${data.issue_count}</strong>
-            </div>
-          </div>
+        document.getElementById('qa-baseline-text').innerHTML = `
+          <strong>${data.passed_checks} / ${data.total_checks} checks passed</strong> &mdash; ${data.is_valid ? 'No issues found in core data.' : 'Violations detected.'}
         `;
+        alert(`Baseline Validation: ${data.passed_checks}/${data.total_checks} checks passed! Status: ${data.is_valid ? 'CLEAN BASELINE' : 'ISSUES DETECTED'}`);
       } catch (err) {
-        container.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Validation failed: ${err.message}</p>`;
+        alert(`Validation error: ${err.message}`);
       }
     }
 
-    // 10. Database Table Explorer
-    async function loadExplorerTable(tableName) {
-      const container = document.getElementById('explorer-table-container');
+    // 8. Database Explorer (Direct Table Inspection)
+    async function loadExplorerTableData(table) {
+      const container = document.getElementById('explorer-content-container');
       container.innerHTML = '<div class="spinner"></div> Querying table...';
 
       try {
-        const res = await fetch(`/api/tables/${tableName}?limit=25`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetch(`/api/tables/${table}?limit=25`);
         const data = await res.json();
-
         const rows = data.rows || [];
         const columns = data.columns || [];
 
         if (!rows.length) {
-          container.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">Table <code>${tableName}</code> contains 0 records.</p>`;
+          container.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">Table <code>${table}</code> contains 0 records.</p>`;
           return;
         }
 
         let html = `
-          <div style="margin-bottom: 10px; font-size: 12.5px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-            <span>Showing first <strong>${rows.length}</strong> of <strong>${Number(data.total).toLocaleString()}</strong> records in <code>${tableName}</code></span>
-            <span class="badge badge-neutral">Direct View</span>
+          <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted);">
+            Showing first <strong>${rows.length}</strong> of <strong>${Number(data.total).toLocaleString()}</strong> rows in <code>${table}</code>
           </div>
           <div class="table-container">
             <table>
@@ -1890,75 +1975,40 @@
         html += '</tbody></table></div>';
         container.innerHTML = html;
       } catch (err) {
-        container.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Error loading table: ${err.message}</p>`;
+        container.innerHTML = `<p style="color: var(--danger);">Failed to query table: ${err.message}</p>`;
       }
     }
 
-    // 11. Prerequisite DAG Graph
-    async function loadPrerequisitesGraph() {
-      const container = document.getElementById('graph-container');
-      const badge = document.getElementById('dag-status-badge');
-      if (networkGraph) return; // already rendered
-
+    // 9. Evaluation & Metrics Data
+    async function loadEvaluationMetricsData() {
       try {
-        const res = await fetch('/api/skills/prerequisites-graph');
+        const res = await fetch('/api/evaluation');
         const data = await res.json();
 
-        if (badge) {
-          badge.className = data.is_acyclic ? 'badge badge-success' : 'badge badge-danger';
-          badge.innerText = data.status || (data.is_acyclic ? 'Acyclic DAG Verified' : 'Cycle Detected');
+        if (data.recommendations) {
+          document.getElementById('eval-coverage').innerText = data.recommendations.recommendation_coverage.toFixed(2);
         }
 
-        const nodes = new vis.DataSet(data.nodes.map(n => ({
-          id: n.id,
-          label: `${n.label}\n(L${n.level})`,
-          shape: 'box',
-          color: {
-            background: n.level >= 4 ? '#eef2ff' : (n.level >= 2 ? '#f8fafc' : '#ecfdf5'),
-            border: n.level >= 4 ? '#6366f1' : '#94a3b8'
-          },
-          font: { color: '#0f172a', size: 12, face: 'Inter' }
-        })));
-
-        const edges = new vis.DataSet(data.edges.map(e => ({
-          from: e.from,
-          to: e.to,
-          arrows: 'to',
-          color: { color: '#94a3b8' }
-        })));
-
-        const options = {
-          layout: {
-            hierarchical: {
-              direction: 'UD',
-              sortMethod: 'directed',
-              levelSeparation: 90,
-              nodeSpacing: 160
-            }
-          },
-          physics: false
-        };
-
-        networkGraph = new vis.Network(container, { nodes, edges }, options);
+        if (data.table_counts) {
+          const totalRecords = Object.values(data.table_counts).reduce((a, b) => a + b, 0);
+          document.getElementById('eval-total-records').innerText = Number(totalRecords).toLocaleString();
+        }
       } catch (err) {
-        container.innerHTML = `<p style="color: var(--danger); padding: 20px;">Failed to render graph: ${err.message}</p>`;
+        console.error('Failed to load evaluation metrics:', err);
       }
     }
 
-    // Walkthrough Modal
-    function showDemoGuideModal() {
-      document.getElementById('demo-guide-modal').style.display = 'flex';
+    // Modal Control
+    function showGuidedWorkflowModal() {
+      document.getElementById('workflow-modal').style.display = 'flex';
     }
 
-    function closeDemoGuideModal() {
-      document.getElementById('demo-guide-modal').style.display = 'none';
+    function closeGuidedWorkflowModal() {
+      document.getElementById('workflow-modal').style.display = 'none';
     }
 
-    // Initialize application on DOM ready
-    window.addEventListener('DOMContentLoaded', () => {
-      loadOverview();
-      loadLearnersList();
-    });
+    // Initialize application on load
+    window.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>

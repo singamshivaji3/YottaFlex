@@ -483,6 +483,17 @@ def get_table_data(
         conn.close()
 
 
+@app.get("/api/evaluation", tags=["Evaluation & Metrics"])
+def get_evaluation_metrics():
+    """Computes comprehensive evaluation metrics over the current database state."""
+    from src.evaluation import compute_metrics
+    conn = get_active_db()
+    try:
+        return compute_metrics(conn)
+    finally:
+        conn.close()
+
+
 @app.get("/api/validation", tags=["Quality & Anomaly Lab"])
 def run_validation():
     """Executes database integrity and pedagogical rule checks live, returning full validation report."""
