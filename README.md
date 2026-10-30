@@ -56,15 +56,34 @@ py scripts/validate_data.py
 # 3. Verify deterministic reproducibility across independent runs
 py scripts/reproducibility_check.py
 
-# 4. Run automated test suite (19 tests covering schema, mastery, recommender, and anomalies)
+# 4. Run automated test suite (31 tests covering REST API, schema, mastery, recommender, and anomalies)
 py -m pytest -v
 ```
 
-### 2.4 Launch Interactive Streamlit Dashboard
+### 2.4 Launch the Production Web Application (Frontend + REST API)
+Start the complete end-to-end full-stack web application with a single command:
+
+```powershell
+# Launch FastAPI web server & interactive single-page application
+py run_server.py
+```
+- **Web Application UI:** [`http://localhost:8000`](http://localhost:8000) (Interactive SPA with mastery radar, real-time simulator, recommendations, interactive DAG visualizer, and anomaly lab)
+- **Interactive Swagger REST API:** [`http://localhost:8000/docs`](http://localhost:8000/docs)
+- **OpenAPI JSON Spec:** [`http://localhost:8000/openapi.json`](http://localhost:8000/openapi.json)
+
+### 2.5 Alternative Streamlit Dashboard
 ```powershell
 py -m streamlit run app.py
 ```
-Open `http://localhost:8501` in your browser to interactively explore learner mastery, inspect recommendation reason codes, and run anomaly detections.
+Open `http://localhost:8501` to view the alternative Streamlit dashboard.
+
+### 2.6 Docker Containerized Deployment (Ready to Deploy)
+Deploy anywhere with one command using Docker:
+```bash
+# Build and run containerized service
+docker compose up --build
+```
+The application will automatically initialize the database, expose port `8000`, run automated health checks, and serve both the web frontend and the REST API.
 
 ---
 
@@ -168,12 +187,18 @@ yottaflex_antigravity_starter/
 │   ├── mastery.py                         # Temporal-safe EWMA skill mastery engine
 │   ├── recommender.py                     # Prerequisite-aware explainable recommender
 │   ├── validator.py                       # Referential integrity, DAG acyclicity & rule checks
+│   ├── api.py                             # Production FastAPI REST application & endpoints
+│   ├── static/index.html                  # Interactive Single-Page Application (SPA) web frontend
 │   └── evaluation.py                      # Honest metrics calculation and markdown reporter
+├── Dockerfile                             # Production container image definition
+├── docker-compose.yml                     # One-click containerized deployment service
+├── run_server.py                          # Dedicated web application runner
 ├── scripts/
 │   ├── generate_data.py                   # CLI data generator & exporter
 │   ├── validate_data.py                   # CLI database and anomaly validator
 │   └── reproducibility_check.py           # Verification script comparing table counts & SHA-256 hashes
 ├── tests/
+│   ├── test_api.py                        # Tests for FastAPI REST endpoints & web UI serving
 │   ├── test_generator.py                  # Tests for generation, volumes, IDs, and DAGs
 │   ├── test_mastery.py                    # Tests for EWMA math and temporal cutoff
 │   ├── test_recommendations.py            # Tests for prerequisite gating and explainability
@@ -196,7 +221,8 @@ yottaflex_antigravity_starter/
 
 ## 7. Evidence & Test Results Summary
 
-- **Automated Tests**: 19 passed in 0.88s (`pytest -v`)
+- **Automated Tests**: 31 passed in 1.86s (`pytest -v`)
+- **Web Application**: Live interactive SPA serving on `http://localhost:8000` with Swagger docs at `/docs`
 - **Reproducibility**: 10/10 tables verified identical SHA-256 checksums across independent runs (`reproducibility_check.py`)
 - **Validation**: 6/6 integrity checks passed on baseline (`validate_data.py`)
 - **Anomaly Detection**: 5/5 anomaly fixtures identified and verified (`anomalies.json`)
