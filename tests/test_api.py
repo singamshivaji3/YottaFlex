@@ -65,6 +65,7 @@ def test_learner_recommendations_endpoint(client):
     data = response.json()
     assert data["learner_id"] == "LRN-000001"
     assert "recommendations" in data
+    assert "blocked_activities" in data
     if len(data["recommendations"]) > 0:
         rec = data["recommendations"][0]
         assert "content_id" in rec

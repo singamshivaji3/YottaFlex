@@ -67,9 +67,11 @@ class LearningRecommender:
         prereq_graph: Optional[Dict[str, List[Tuple[str, float]]]] = None,
         all_skills: Optional[Dict[str, Any]] = None,
         content_rows: Optional[List[Any]] = None,
-    ) -> List[Dict[str, Any]]:
+        return_blocked: bool = False,
+    ) -> Any:
         """
         Produces top-K ranked, explainable recommendations for a specific learner as of query cutoff.
+        If return_blocked=True, also returns activities blocked due to unmet prerequisites.
         """
         if prereq_graph is None:
             prereq_graph = self.get_prerequisite_graph(conn)
@@ -106,6 +108,7 @@ class LearningRecommender:
             content_rows = cursor.fetchall()
 
         candidates = []
+        blocked_candidates = []
         for r in content_rows:
             cid = r["content_id"]
             sid = r["skill_id"]
@@ -123,7 +126,27 @@ class LearningRecommender:
             eligible, fail_prereq, curr_p_m, req_p_m = self.check_prerequisites_met(
                 sid, prereq_graph, learner_mastery
             )
+            skill_meta = all_skills.get(sid)
+            skill_name = skill_meta["name"] if skill_meta else sid
+
             if not eligible:
+                prereq_meta = all_skills.get(fail_prereq)
+                prereq_name = prereq_meta["name"] if prereq_meta else fail_prereq
+                curr_val = round(curr_p_m, 2) if curr_p_m is not None else 0.00
+                req_val = round(req_p_m, 2) if req_p_m is not None else 0.70
+                blocked_candidates.append({
+                    "content_id": cid,
+                    "content_title": r["title"],
+                    "content_type": r["content_type"],
+                    "difficulty_level": r["difficulty_level"],
+                    "target_skill_id": sid,
+                    "target_skill_name": skill_name,
+                    "unmet_prerequisite_id": fail_prereq,
+                    "unmet_prerequisite_name": prereq_name,
+                    "current_mastery": curr_val,
+                    "required_threshold": req_val,
+                    "reason": f"Requires prerequisite '{prereq_name}' mastery >= {req_val:.2f} (current: {curr_val:.2f})",
+                })
                 continue
 
             # Calculate explainable score components
@@ -141,9 +164,6 @@ class LearningRecommender:
             score = round(min(1.0, max(0.0, score)), 4)
 
             # Determine reason code and human-readable description
-            skill_meta = all_skills.get(sid)
-            skill_name = skill_meta["name"] if skill_meta else sid
-
             reason_code = "SKILL_DEFICIT_HIGH_PRIORITY" if skill_gap > 0.5 else "SKILL_PRACTICE_RECOMMENDED"
             reason_desc = (
                 f"Target skill '{skill_name}' mastery is {current_m:.2f} (gap: {skill_gap:.2f}). "
@@ -154,6 +174,8 @@ class LearningRecommender:
                 "learner_id": learner_id,
                 "content_id": cid,
                 "content_title": r["title"],
+                "content_type": r["content_type"],
+                "difficulty_level": r["difficulty_level"],
                 "skill_id": sid,
                 "skill_name": skill_name,
                 "score": score,
@@ -177,6 +199,14 @@ class LearningRecommender:
                 if len(deduped) >= top_k:
                     break
 
+        # Deduplicate blocked candidates
+        seen_blocked: Set[str] = set()
+        deduped_blocked = []
+        for b in blocked_candidates:
+            if b["content_id"] not in seen_blocked:
+                seen_blocked.add(b["content_id"])
+                deduped_blocked.append(b)
+
         # Assign ranks
         deterministic_default_time = "2026-10-22T12:00:00Z"
         for idx, rec in enumerate(deduped, start=1):
@@ -184,6 +214,8 @@ class LearningRecommender:
             rec["algorithm_version"] = ALGORITHM_VERSION
             rec["generated_at"] = as_of_time or deterministic_default_time
 
+        if return_blocked:
+            return deduped, deduped_blocked
         return deduped
 
     def generate_and_save_all_recommendations(

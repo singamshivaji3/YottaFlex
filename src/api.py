@@ -259,12 +259,15 @@ def get_learner_recommendations(
             raise HTTPException(status_code=404, detail=f"Learner '{learner_id}' not found.")
 
         recommender = LearningRecommender()
-        recs = recommender.recommend_for_learner(conn, learner_id, as_of_time=as_of, top_k=top_k)
+        recs, blocked = recommender.recommend_for_learner(
+            conn, learner_id, as_of_time=as_of, top_k=top_k, return_blocked=True
+        )
         return {
             "learner_id": learner_id,
             "as_of_time": as_of,
             "top_k": top_k,
             "recommendations": recs,
+            "blocked_activities": blocked,
         }
     finally:
         conn.close()

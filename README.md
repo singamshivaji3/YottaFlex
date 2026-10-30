@@ -3,7 +3,7 @@
 
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-blue.svg)](https://www.python.org/)
 [![Database](https://img.shields.io/badge/Database-SQLite3-green.svg)](https://www.sqlite.org/)
-[![Tests](https://img.shields.io/badge/Tests-19%2F19%20Passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-33%2F33%20Passing-brightgreen.svg)](tests/)
 [![Reproducibility](https://img.shields.io/badge/Reproducibility-100%25%20Deterministic-success.svg)](scripts/reproducibility_check.py)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -11,79 +11,87 @@
 
 ## 1. Project Overview
 
-This repository contains the complete implementation for the **YottaFlex Associate AI Forward Deployed Engineer** candidate project. It delivers an end-to-end, local-first, zero-spend workflow that:
+**YottaFlex AI Learning Recommendation Engine** is an end-to-end, local-first platform that calculates temporal-safe learner skill mastery, strictly enforces prerequisite gates, and delivers explainable activity recommendations with transparent reason codes.
 
-1. **Generates Synthetic Learning Telemetry**: A single deterministic generator parameterizes volume tiers from small development fixtures up to the target scale (**10,000 learners, 500 skills, 2,000 content items, and 500,000 attempts**) using a fixed seed (`20261022`).
-2. **Models 10 Relational Entities**: Enforces primary keys, foreign keys, bridge tables, and SQLite `PRAGMA foreign_keys = ON;`.
-3. **Calculates Temporal-Safe Mastery**: Computes skill mastery via Exponentially Weighted Moving Average (EWMA) strictly as of a cutoff timestamp ($t_{\text{query}}$), preventing future attempts from leaking into past evaluations.
-4. **Gates Prerequisites**: Enforces a Directed Acyclic Graph (DAG) of skill prerequisites as a hard eligibility gate before recommending downstream learning activities.
-5. **Generates Explainable Recommendations**: Ranks eligible candidate activities using multi-factor weights (Skill Gap 45%, Difficulty Alignment 35%, Content Relevance 20%), attaching machine-readable reason codes, transparent rationale text, and algorithm versioning.
-6. **Detects & Isolates 5 Explicit Anomalies**: Validates integrity rules and isolates labeled test fixtures without corrupting the clean baseline dataset.
-7. **Verifies 100% Deterministic Reproducibility**: Demonstrates row count and SHA-256 hash parity across independent regeneration runs.
-8. **Exports Multi-Format Deliverables**: Exports clean database tables to CSV, JSON, and full SQL transaction dumps.
-9. **Interactive Local Dashboard**: Features a Streamlit application (`app.py`) for inspecting learner mastery, prerequisite DAGs, recommendations, and anomaly detection.
+Key capabilities:
+1. **Deterministic Telemetry Generation**: Generates 10 relational entities from small development cohorts up to **500,000 attempts** using fixed seed `20261022` with 100% SHA-256 reproducibility.
+2. **Temporal-Safe EWMA Mastery**: Updates skill competencies using Exponentially Weighted Moving Average (35% recent attempt, 65% prior history) strictly respecting query cutoffs to eliminate future data leakage.
+3. **Hard Prerequisite DAG Gating**: Blocks activities requiring unmastered prerequisites (&lt; 0.70) on the backend before ranking.
+4. **Explainable Multi-Factor Ranking**: Ranks eligible candidate activities ($0.45 \cdot \text{SkillGap} + 0.35 \cdot \text{DifficultyFit} + 0.20 \cdot \text{Relevance}$) with machine-readable reason codes and human-readable explanations.
+5. **Quality Assurance & Anomaly Lab**: Validates clean baseline relational integrity (6/6 checks passed) and detects 5 isolated edge-case anomaly fixtures.
+6. **Interactive Single-Page Web App**: Full-stack application featuring a guided recommendation workflow, real-time telemetry simulator, database table explorer, and interactive prerequisite DAG.
 
 ---
 
 ## 2. Quickstart & Verification (Windows PowerShell)
 
-The solution runs local-first with zero paid APIs, secrets, or cloud dependencies.
+The solution runs local-first with $0 spend, no paid APIs, and no external cloud secrets.
 
 ### 2.1 Prerequisites
 - Windows 10/11 with PowerShell
-- Python 3.11+ (Python 3.14+ supported)
+- Python 3.11+ (Python 3.14+ fully verified)
 
 ### 2.2 Setup Environment
-Clone or navigate to the repository directory:
 ```powershell
 # Verify Python version
 py --version
 
-# Install dependencies (pytest, pandas, streamlit)
+# Install dependencies (FastAPI, uvicorn, pydantic, pytest)
 py -m pip install -r requirements.txt
 ```
 
-### 2.3 Run Core Verification Pipeline
-Execute the full sequence with one-line commands:
-
+### 2.3 Run Automated Verification Suite (33 Tests)
 ```powershell
-# 1. Generate small baseline dataset & recommendations (with CSV/JSON/SQL exports)
-py scripts/generate_data.py --scale small --export-all
-
-# 2. Validate database constraints, business rules, and anomaly fixtures
+# 1. Validate baseline database integrity and 5 isolated anomaly fixtures
 py scripts/validate_data.py
 
-# 3. Verify deterministic reproducibility across independent runs
+# 2. Verify deterministic reproducibility (10/10 table SHA-256 match)
 py scripts/reproducibility_check.py
 
-# 4. Run automated test suite (31 tests covering REST API, schema, mastery, recommender, and anomalies)
+# 3. Run complete automated test suite (33 tests)
 py -m pytest -v
 ```
 
-### 2.4 Launch the Production Web Application (Frontend + REST API)
-Start the complete end-to-end full-stack web application with a single command:
-
+### 2.4 Launch the Production Web Application
+Start the full-stack web application with a single command:
 ```powershell
-# Launch FastAPI web server & interactive single-page application
 py run_server.py
 ```
-- **Web Application UI:** [`http://localhost:8000`](http://localhost:8000) (Interactive SPA with mastery radar, real-time simulator, recommendations, interactive DAG visualizer, and anomaly lab)
-- **Interactive Swagger REST API:** [`http://localhost:8000/docs`](http://localhost:8000/docs)
-- **OpenAPI JSON Spec:** [`http://localhost:8000/openapi.json`](http://localhost:8000/openapi.json)
+- **Web Application UI:** [http://localhost:8000](http://localhost:8000) (Calm, accessible light theme with guided recommendation workflow)
+- **Interactive REST API Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **OpenAPI JSON Spec:** [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
 
-### 2.5 Alternative Streamlit Dashboard
-```powershell
-py -m streamlit run app.py
-```
-Open `http://localhost:8501` to view the alternative Streamlit dashboard.
+---
 
-### 2.6 Docker Containerized Deployment (Ready to Deploy)
-Deploy anywhere with one command using Docker:
-```bash
-# Build and run containerized service
-docker compose up --build
-```
-The application will automatically initialize the database, expose port `8000`, run automated health checks, and serve both the web frontend and the REST API.
+## 2.5 Step-by-Step Evaluator Walkthrough Guide
+
+Follow this 5-step path to test the application end-to-end:
+
+1. **Step 1: Open the Application & Home Overview**
+   - Navigate to `http://localhost:8000`.
+   - Read the one-sentence summary, review the live metric cards (50 Learners, 20 Skills, 600 Attempts, 100% Coverage), and click **"Start a Recommendation →"**.
+
+2. **Step 2: Guided Recommendation Flow (Learner Mastery & Cutoffs)**
+   - Filter or select **`LRN-000001 (Alice Chen)`** from the searchable dropdown.
+   - Inspect her skill mastery bars (Mastered $\ge 85\%$, Competent $\ge 70\%$, In Progress).
+   - Test temporal safety: Click **"1 Week Prior"** or **"2 Weeks Prior"** preset cutoffs. Notice scores adjust dynamically without future attempt leakage. Click **"Full Seed History"** to restore.
+   - Review her recent assessment telemetry history table below the competency grid.
+
+3. **Step 3: Generate Recommendations & Inspect Prerequisite Gates**
+   - Click **"🎯 Generate / Refresh Recommendations"**.
+   - **Eligible Activities:** Review the ranked cards displaying Difficulty, Target Skill, Score (e.g. 84/100), factor breakdown pills, reason codes (`SKILL_DEFICIT_HIGH_PRIORITY`), and human-readable explanations.
+   - **Blocked Activities:** Scroll down to the **"🔒 Blocked Activities"** section. Observe that activities requiring unmastered prerequisites are strictly disqualified on the backend, displaying the exact unmet prerequisite name, required mastery ($0.70$), and Alice's current score.
+
+4. **Step 4: Real-Time Learning Simulator**
+   - Switch to the **"⚡ Learning Simulator"** tab.
+   - Select content item `CNT-000001`, enter score `0.95`, and click **"⚡ Submit Simulated Attempt"**.
+   - Notice the atomic database insertion confirmation. Return to **"Recommendation Flow"** to observe Alice's mastery level and recommendations update live!
+
+5. **Step 5: Data Quality & Isolated Anomaly Detection**
+   - Switch to **"🛡️ Data Quality & Anomalies"**.
+   - Observe that the **Clean Baseline Database** has 6/6 checks passed and 0 violations.
+   - Click **"Test Detection"** on any of the 5 deliberately injected anomaly fixtures (`ANOM-001` through `ANOM-005`) to verify authentic backend detection without baseline corruption.
+   - Inspect the **"🔍 Database Explorer"** and **"🕸️ Prerequisite DAG"** under Advanced Inspection.
 
 ---
 
