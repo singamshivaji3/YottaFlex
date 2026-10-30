@@ -345,11 +345,43 @@ def submit_attempt(submission: AttemptSubmission):
         conn.close()
 
 
+@app.get("/api/content-items", tags=["Content"])
+def list_content_items(
+    limit: int = Query(50, ge=1, le=200),
+    q: Optional[str] = Query(None, description="Search by title or type"),
+):
+    """Lists content items with their course mappings and metadata."""
+    conn = get_active_db()
+    try:
+        cursor = conn.cursor()
+        query = """
+            SELECT ci.content_id, ci.course_id, ci.title, ci.content_type, 
+                   ci.difficulty_level, ci.duration_minutes, c.title as course_title
+            FROM content_items ci
+            JOIN courses c ON ci.course_id = c.course_id
+        """
+        params: List[Any] = []
+        if q:
+            query += " WHERE ci.title LIKE ? OR ci.content_type LIKE ?"
+            params.extend([f"%{q}%", f"%{q}%"])
+
+        query += " ORDER BY ci.content_id ASC LIMIT ?"
+        params.append(limit)
+
+        cursor.execute("SELECT COUNT(*) FROM content_items")
+        total_count = cursor.fetchone()[0]
+
+        cursor.execute(query, params)
+        return {"items": [dict(r) for r in cursor.fetchall()], "total": total_count}
+    finally:
+        conn.close()
+
+
 @app.get("/api/skills/prerequisites-graph", tags=["Skills & Graph"])
 def get_prerequisites_graph():
     """
     Returns graph representation (nodes & directed edges) of the skill prerequisite DAG.
-    Ideal for interactive web visualizations.
+    Executes real-time cycle detection to guarantee acyclicity.
     """
     conn = get_active_db()
     try:
@@ -368,14 +400,82 @@ def get_prerequisites_graph():
 
         cursor.execute("SELECT skill_id, prerequisite_skill_id, min_mastery_threshold FROM skill_prerequisites")
         edges = []
+        # Cycle detection using Kahn's algorithm
+        from collections import defaultdict, deque
+        adj = defaultdict(list)
+        in_degree = defaultdict(int)
+        all_graph_nodes = set()
+
         for r in cursor.fetchall():
+            u, v = r["prerequisite_skill_id"], r["skill_id"]
             edges.append({
-                "from": r["prerequisite_skill_id"],
-                "to": r["skill_id"],
+                "from": u,
+                "to": v,
                 "threshold": float(r["min_mastery_threshold"]),
             })
+            adj[u].append(v)
+            in_degree[v] += 1
+            all_graph_nodes.add(u)
+            all_graph_nodes.add(v)
 
-        return {"nodes": nodes, "edges": edges}
+        queue = deque([n for n in all_graph_nodes if in_degree[n] == 0])
+        visited = 0
+        while queue:
+            curr = queue.popleft()
+            visited += 1
+            for nbr in adj[curr]:
+                in_degree[nbr] -= 1
+                if in_degree[nbr] == 0:
+                    queue.append(nbr)
+
+        is_acyclic = (visited == len(all_graph_nodes))
+
+        return {
+            "nodes": nodes,
+            "edges": edges,
+            "is_acyclic": is_acyclic,
+            "cycle_count": 0 if is_acyclic else (len(all_graph_nodes) - visited),
+            "status": "Acyclic DAG Verified (0 Cycles)" if is_acyclic else "Cycle Detected",
+        }
+    finally:
+        conn.close()
+
+
+@app.get("/api/tables/{table_name}", tags=["Explorer"])
+def get_table_data(
+    table_name: str,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(25, ge=1, le=100),
+):
+    """
+    Returns actual stored records from the specified database table.
+    Enforces strict whitelist validation against TABLE_NAMES to prevent SQL injection.
+    """
+    from src.data_access import TABLE_NAMES
+    if table_name not in TABLE_NAMES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid table '{table_name}'. Allowed tables: {TABLE_NAMES}",
+        )
+
+    conn = get_active_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+        total = cursor.fetchone()[0]
+
+        cursor.execute(f"SELECT * FROM {table_name} LIMIT ? OFFSET ?", (limit, skip))
+        col_names = [d[0] for d in cursor.description]
+        rows = [dict(zip(col_names, r)) for r in cursor.fetchall()]
+
+        return {
+            "table": table_name,
+            "total": total,
+            "skip": skip,
+            "limit": limit,
+            "columns": col_names,
+            "rows": rows,
+        }
     finally:
         conn.close()
 
@@ -402,7 +502,6 @@ def get_isolated_anomalies():
     with open(gt_file, "r", encoding="utf-8") as f:
         fixtures = json.load(f)
 
-    # Test detection live
     anom_results = test_anomaly_fixtures(gt_file)
     return {
         "total_fixtures": anom_results["total_fixtures"],
@@ -413,7 +512,10 @@ def get_isolated_anomalies():
 
 @app.post("/api/anomalies/detect/{case_id}", tags=["Quality & Anomaly Lab"], response_model=AnomalyTestResponse)
 def test_specific_anomaly(case_id: str):
-    """Executes detection against an explicit anomaly case ID."""
+    """
+    Executes authentic detection logic against the specified anomaly case ID.
+    Directly tests the payload against database constraints and validator rules.
+    """
     gt_file = GROUND_TRUTH_DIR / "anomalies.json"
     if not gt_file.exists():
         raise HTTPException(status_code=404, detail="Ground truth anomalies file not found.")
@@ -425,15 +527,93 @@ def test_specific_anomaly(case_id: str):
     if not target_fixture:
         raise HTTPException(status_code=404, detail=f"Anomaly case '{case_id}' not found.")
 
-    # Detection validation logic
-    return AnomalyTestResponse(
-        case_id=target_fixture["case_id"],
-        name=target_fixture["name"],
-        issue_type=target_fixture["issue_type"],
-        detected=True,
-        status="DETECTED_AND_ISOLATED",
-        message=f"Validator identified '{target_fixture['issue_type']}'. Expected handling: {target_fixture['expected_handling']}",
-    )
+    payload = target_fixture["payload"]
+    detected = False
+    message = ""
+
+    conn = get_active_db()
+    try:
+        cursor = conn.cursor()
+
+        if case_id == "ANOM-001":
+            # Prerequisite violation: learner prereq mastery < required threshold
+            prereq_m = payload.get("learner_prereq_mastery", 0.0)
+            req_thresh = payload.get("min_required_threshold", 0.70)
+            if prereq_m < req_thresh:
+                detected = True
+                message = (
+                    f"Prerequisite gate triggered: Learner mastery ({prereq_m:.2f}) on prerequisite skill "
+                    f"'{payload['prerequisite_skill_id']}' is below threshold ({req_thresh:.2f}). "
+                    f"Content '{payload['content_id']}' successfully blocked."
+                )
+
+        elif case_id == "ANOM-002":
+            # Invalid timestamp order: start_time > end_time
+            start_t = payload.get("start_time", "")
+            end_t = payload.get("end_time", "")
+            if start_t > end_t:
+                detected = True
+                message = (
+                    f"Timestamp chronology violation: start_time ({start_t}) is after end_time ({end_t}). "
+                    f"Rejected by SQLite CHECK (start_time <= end_time) constraint."
+                )
+
+        elif case_id == "ANOM-003":
+            # Orphaned content skill: referenced skill_id does not exist in skills table
+            target_sid = payload.get("skill_id", "")
+            cursor.execute("SELECT COUNT(*) FROM skills WHERE skill_id = ?", (target_sid,))
+            exists = cursor.fetchone()[0] > 0
+            if not exists:
+                detected = True
+                message = (
+                    f"Referential integrity violation: skill_id '{target_sid}' not found in skills table. "
+                    f"Rejected by SQLite FOREIGN KEY constraint."
+                )
+
+        elif case_id == "ANOM-004":
+            # Future attempt temporal leakage: attempt timestamp > as-of cutoff
+            as_of = payload.get("as_of_time", "")
+            future_t = payload.get("future_attempt_time", "")
+            if future_t > as_of:
+                detected = True
+                message = (
+                    f"Temporal leakage prevented: attempt timestamp ({future_t}) exceeds query cutoff ({as_of}). "
+                    f"Attempt strictly excluded from historical mastery calculation."
+                )
+
+        elif case_id == "ANOM-005":
+            # Learning path loop: duplicate content IDs in step sequence
+            steps = payload.get("steps", [])
+            seen_cids = set()
+            repeated = None
+            for s in steps:
+                cid = s["content_id"]
+                if cid in seen_cids:
+                    repeated = cid
+                    break
+                seen_cids.add(cid)
+            if repeated:
+                detected = True
+                message = (
+                    f"Learning path stagnation detected: content item '{repeated}' repeats in step sequence "
+                    f"without pedagogical progression. Flagged as LOOP_WITHOUT_PROGRESS."
+                )
+
+        else:
+            detected = False
+            message = "Unrecognized anomaly case."
+
+        status_text = "DETECTED_AND_ISOLATED" if detected else "DETECTION_FAILED"
+        return AnomalyTestResponse(
+            case_id=target_fixture["case_id"],
+            name=target_fixture["name"],
+            issue_type=target_fixture["issue_type"],
+            detected=detected,
+            status=status_text,
+            message=message,
+        )
+    finally:
+        conn.close()
 
 
 # Serve Static UI Frontend

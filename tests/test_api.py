@@ -97,6 +97,39 @@ def test_skills_prerequisites_graph(client):
     assert "edges" in data
     assert len(data["nodes"]) > 0
     assert len(data["edges"]) > 0
+    assert "is_acyclic" in data
+    assert data["is_acyclic"] is True
+    assert data["cycle_count"] == 0
+
+
+def test_content_items_endpoint(client):
+    response = client.get("/api/content-items?limit=10")
+    assert response.status_code == 200
+    data = response.json()
+    assert "items" in data
+    assert "total" in data
+    assert len(data["items"]) <= 10
+    assert len(data["items"]) > 0
+    item = data["items"][0]
+    assert "content_id" in item
+    assert "title" in item
+    assert "content_type" in item
+
+
+def test_tables_explorer_valid_and_invalid(client):
+    # Valid table
+    response = client.get("/api/tables/courses?limit=5")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["table"] == "courses"
+    assert "columns" in data
+    assert "course_id" in data["columns"]
+    assert "rows" in data
+    assert len(data["rows"]) > 0
+
+    # Whitelist rejection: SQL injection / invalid table
+    bad_resp = client.get("/api/tables/users_passwords;DROP TABLE--")
+    assert bad_resp.status_code == 400
 
 
 def test_validation_endpoint(client):
@@ -116,13 +149,15 @@ def test_anomalies_endpoint(client):
     assert data["detected_count"] == 5
 
 
-def test_specific_anomaly_detector(client):
-    response = client.post("/api/anomalies/detect/ANOM-001")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["case_id"] == "ANOM-001"
-    assert data["detected"] is True
-    assert data["status"] == "DETECTED_AND_ISOLATED"
+def test_all_five_anomalies_detected_individually(client):
+    for case_id in ["ANOM-001", "ANOM-002", "ANOM-003", "ANOM-004", "ANOM-005"]:
+        response = client.post(f"/api/anomalies/detect/{case_id}")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["case_id"] == case_id
+        assert data["detected"] is True
+        assert data["status"] == "DETECTED_AND_ISOLATED"
+        assert len(data["message"]) > 0
 
 
 def test_web_ui_served(client):

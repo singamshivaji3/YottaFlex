@@ -617,7 +617,7 @@
       <div class="card">
         <div class="card-title">
           <span>Skill Prerequisite Directed Acyclic Graph (DAG)</span>
-          <span class="badge badge-primary">Acyclic Guarantee</span>
+          <span id="dag-status-badge" class="badge badge-primary">Checking DAG...</span>
         </div>
         <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
           Interactive pedagogical graph. Arrows denote prerequisite dependencies: <code>Prerequisite Skill &rarr; Target Skill</code>. 
@@ -747,48 +747,67 @@
           if (el) el.innerHTML = options;
         });
 
-        // Load Content Items for Simulator
+        // Add sync listeners
+        document.getElementById('mastery-learner-select').addEventListener('change', (e) => syncLearnerSelection(e.target.value));
+        document.getElementById('recs-learner-select').addEventListener('change', (e) => syncLearnerSelection(e.target.value));
+        document.getElementById('sim-learner-select').addEventListener('change', (e) => syncLearnerSelection(e.target.value));
+
+        // Load Real Content Items for Simulator
         loadSimulatorContent();
       } catch (err) {
         console.error('Failed to load learners:', err);
       }
     }
 
-    async function loadSimulatorContent() {
-      try {
-        const res = await fetch('/api/skills/prerequisites-graph');
-        // Simple stub items for simulator
-        const contentSelect = document.getElementById('sim-content-select');
-        if (contentSelect) {
-          contentSelect.innerHTML = `
-            <option value="CNT-000001">CNT-000001 — Exercise: Mastery Unit 1</option>
-            <option value="CNT-000002">CNT-000002 — Quiz: Mastery Unit 2</option>
-            <option value="CNT-000003">CNT-000003 — Project: Advanced Unit 3</option>
-          `;
-        }
-      } catch (err) {}
+    function syncLearnerSelection(lid) {
+      ['mastery-learner-select', 'recs-learner-select', 'sim-learner-select'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value !== lid) el.value = lid;
+      });
     }
 
-    // 3. Learner Mastery
+    async function loadSimulatorContent() {
+      try {
+        const res = await fetch('/api/content-items?limit=50');
+        const data = await res.json();
+        const contentSelect = document.getElementById('sim-content-select');
+        if (contentSelect && data.items && data.items.length) {
+          contentSelect.innerHTML = data.items.map(ci => 
+            `<option value="${ci.content_id}">${ci.content_id} — ${ci.title} (L${ci.difficulty_level} ${ci.content_type})</option>`
+          ).join('');
+        }
+      } catch (err) {
+        console.error('Failed to load content items:', err);
+      }
+    }
+
+    // 3. Learner Mastery & Assessment History (Workflow 1 & 2)
     async function loadLearnerMastery() {
       const select = document.getElementById('mastery-learner-select');
       if (!select || !select.value) return;
       const lid = select.value;
+      syncLearnerSelection(lid);
       const cutoff = document.getElementById('mastery-cutoff-input').value.trim();
 
       const container = document.getElementById('mastery-container');
-      container.innerHTML = '<div class="spinner"></div> Calculating temporal-safe mastery...';
+      container.innerHTML = '<div class="spinner"></div> Calculating temporal-safe mastery and loading history...';
 
       try {
-        let url = `/api/learners/${lid}/mastery`;
-        if (cutoff) url += `?as_of=${encodeURIComponent(cutoff)}`;
+        let masteryUrl = `/api/learners/${lid}/mastery`;
+        if (cutoff) masteryUrl += `?as_of=${encodeURIComponent(cutoff)}`;
 
-        const res = await fetch(url);
-        const data = await res.json();
+        const [masteryRes, profileRes] = await Promise.all([
+          fetch(masteryUrl),
+          fetch(`/api/learners/${lid}`)
+        ]);
+
+        const data = await masteryRes.json();
+        const profileData = await profileRes.json();
 
         let html = `
-          <div style="margin-bottom: 18px; font-size: 13px; color: var(--text-secondary);">
-            Showing calculated mastery for <strong>${lid}</strong> ${cutoff ? `(Strict as-of cutoff: <code>${cutoff}</code>)` : '(All historical attempts)'}
+          <div style="margin-bottom: 18px; font-size: 13px; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center;">
+            <span>Showing calculated mastery for <strong>${lid}</strong> ${cutoff ? `(Strict as-of cutoff: <code>${cutoff}</code>)` : '(All historical attempts)'}</span>
+            <span class="badge badge-primary">Evaluated Skills: ${data.skills.length}</span>
           </div>
           <table>
             <thead>
@@ -828,6 +847,49 @@
         });
 
         html += `</tbody></table>`;
+
+        // Render Recent Assessment & Attempt History (Workflow 1)
+        const attempts = profileData.recent_attempts || [];
+        html += `
+          <div style="margin-top: 28px; margin-bottom: 12px;">
+            <h4 style="font-size: 15px; color: var(--text-primary); font-weight: 600;">Recent Interaction & Assessment Telemetry</h4>
+            <p style="font-size: 12.5px; color: var(--text-muted);">Historical logs of attempts and assessments performed by ${lid}</p>
+          </div>
+        `;
+
+        if (attempts.length) {
+          html += `
+            <table>
+              <thead>
+                <tr>
+                  <th>Attempt ID</th>
+                  <th>Content Item</th>
+                  <th>Type</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                  <th>Completion Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+          attempts.forEach(a => {
+            const scorePct = Math.round((a.score || 0) * 100);
+            html += `
+              <tr>
+                <td><code>${a.attempt_id}</code></td>
+                <td><strong>${a.content_title || a.content_id}</strong></td>
+                <td>${a.content_type || 'activity'}</td>
+                <td>${(a.score || 0).toFixed(2)} (${scorePct}%)</td>
+                <td><span class="badge ${a.status === 'completed' ? 'badge-success' : 'badge-warning'}">${a.status}</span></td>
+                <td>${a.end_time}</td>
+              </tr>
+            `;
+          });
+          html += `</tbody></table>`;
+        } else {
+          html += `<p style="color: var(--text-muted); font-size: 13px; padding: 12px 0;">No prior attempts recorded for this learner.</p>`;
+        }
+
         container.innerHTML = html;
       } catch (err) {
         container.innerHTML = `<p style="color: var(--danger);">Failed to calculate mastery: ${err.message}</p>`;
@@ -931,11 +993,17 @@
     // 6. Prerequisite DAG Graph
     async function loadPrerequisitesGraph() {
       const container = document.getElementById('graph-container');
+      const badge = document.getElementById('dag-status-badge');
       if (networkGraph) return; // already rendered
 
       try {
         const res = await fetch('/api/skills/prerequisites-graph');
         const data = await res.json();
+
+        if (badge) {
+          badge.className = data.is_acyclic ? 'badge badge-success' : 'badge badge-danger';
+          badge.innerText = data.status || (data.is_acyclic ? 'Acyclic DAG Verified' : 'Cycle Detected');
+        }
 
         const nodes = new vis.DataSet(data.nodes.map(n => ({
           id: n.id,
@@ -1057,25 +1125,42 @@
       container.innerHTML = '<div class="spinner"></div> Querying table...';
 
       try {
-        const res = await fetch(`/api/${tbl === 'learners' ? 'learners?limit=15' : 'skills/prerequisites-graph'}`);
-        // Simple direct fetch demo
+        const res = await fetch(`/api/tables/${tbl}?limit=25`);
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.detail || `Server error ${res.status}`);
+        }
         const data = await res.json();
-        const items = data.items || data.nodes || [];
+        const rows = data.rows || [];
+        const columns = data.columns || [];
 
-        if (!items.length) {
-          container.innerHTML = '<p style="color: var(--text-muted); padding: 12px;">No rows found.</p>';
+        if (!rows.length) {
+          container.innerHTML = `<p style="color: var(--text-muted); padding: 12px;">Table <code>${tbl}</code> has 0 records.</p>`;
           return;
         }
 
-        const headers = Object.keys(items[0]);
-        let html = `<table><thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>`;
-        items.forEach(row => {
-          html += `<tr>${headers.map(h => `<td>${row[h]}</td>`).join('')}</tr>`;
+        let html = `
+          <div style="margin-bottom: 12px; font-size: 13px; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center;">
+            <span>Showing first <strong>${rows.length}</strong> of <strong>${Number(data.total).toLocaleString()}</strong> rows in <code>${tbl}</code></span>
+            <span class="badge badge-primary">Direct Relational View</span>
+          </div>
+          <table>
+            <thead>
+              <tr>${columns.map(h => `<th>${h}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+        `;
+        rows.forEach(row => {
+          html += `<tr>${columns.map(h => {
+            const val = row[h];
+            const displayVal = val === null ? '<span style="color: var(--text-muted); font-style: italic;">NULL</span>' : (typeof val === 'object' ? JSON.stringify(val) : String(val));
+            return `<td>${displayVal}</td>`;
+          }).join('')}</tr>`;
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
       } catch (err) {
-        container.innerHTML = `<p style="color: var(--danger);">Error: ${err.message}</p>`;
+        container.innerHTML = `<p style="color: var(--danger); padding: 12px;">Error loading table: ${err.message}</p>`;
       }
     }
 
