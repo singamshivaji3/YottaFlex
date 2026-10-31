@@ -66,6 +66,12 @@ def main():
         action="store_true",
         help="Skip generating isolated anomaly fixtures in data/ground_truth/.",
     )
+    parser.add_argument(
+        "--max-rec-learners",
+        type=int,
+        default=None,
+        help="Maximum active learners to precompute recommendations for (defaults to all for small/medium, 1000 for full).",
+    )
 
     args = parser.parse_args()
     db_file = Path(args.db_path)
@@ -103,7 +109,12 @@ def main():
     conn = get_db_connection(db_file)
     try:
         recommender = LearningRecommender()
-        total_recs = recommender.generate_and_save_all_recommendations(conn, top_k=5)
+        max_recs = args.max_rec_learners
+        if max_recs is None and args.scale == "full":
+            max_recs = 1000
+        total_recs = recommender.generate_and_save_all_recommendations(
+            conn, top_k=5, max_learners=max_recs
+        )
         telemetry["recommendation_generation"] = time.time() - t1
         print(f"\n[OK] Generated {total_recs:,} recommendations in {telemetry['recommendation_generation']:.3f}s")
 

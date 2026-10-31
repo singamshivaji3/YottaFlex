@@ -71,7 +71,12 @@ class DataValidator:
 
         self.validate_foreign_keys(report)
         self.validate_identifier_formats(report)
+        self.validate_primary_key_uniqueness(report)
+        self.validate_duplicate_checks(report)
+        self.validate_allowed_enums(report)
         self.validate_attempt_timestamps(report)
+        self.validate_lifecycle_transitions(report)
+        self.validate_arithmetic_reconciliation(report)
         self.validate_prerequisite_dag(report)
         self.validate_recommendation_prerequisites(report)
         self.validate_learning_path_progress(report)
@@ -133,6 +138,231 @@ class DataValidator:
                     )
 
         if format_errors == 0:
+            report.passed_checks += 1
+
+    def validate_primary_key_uniqueness(self, report: ValidationReport) -> None:
+        """Verifies primary key uniqueness across all 10 core and relational tables."""
+        report.total_checks += 1
+        cursor = self.conn.cursor()
+
+        pk_checks = [
+            ("learners", "learner_id"),
+            ("courses", "course_id"),
+            ("skills", "skill_id"),
+            ("content_items", "content_id"),
+            ("attempts", "attempt_id"),
+            ("assessment_results", "assessment_id"),
+            ("recommendations", "recommendation_id"),
+            ("skill_prerequisites", "skill_id, prerequisite_skill_id"),
+            ("content_skills", "content_id, skill_id"),
+            ("learning_paths", "path_id, step_number"),
+        ]
+
+        dupes_found = 0
+        for table, pks in pk_checks:
+            cursor.execute(f"SELECT {pks}, COUNT(*) as cnt FROM {table} GROUP BY {pks} HAVING cnt > 1")
+            rows = cursor.fetchall()
+            if rows:
+                dupes_found += len(rows)
+                for r in rows:
+                    pk_val = r[0] if len(r) > 0 else "unknown"
+                    report.issues.append(
+                        ValidationIssue(
+                            issue_type="PRIMARY_KEY_DUPLICATE",
+                            table=table,
+                            record_id=str(pk_val),
+                            details=f"Duplicate primary key in {table}: {pk_val}",
+                        )
+                    )
+
+        if dupes_found == 0:
+            report.passed_checks += 1
+
+    def validate_duplicate_checks(self, report: ValidationReport) -> None:
+        """Verifies uniqueness constraints on candidate and unique keys."""
+        report.total_checks += 1
+        cursor = self.conn.cursor()
+
+        dup_issues = 0
+        for table, col in [("learners", "email"), ("skills", "name")]:
+            cursor.execute(f"SELECT {col}, COUNT(*) as cnt FROM {table} GROUP BY {col} HAVING cnt > 1")
+            rows = cursor.fetchall()
+            if rows:
+                dup_issues += len(rows)
+                for r in rows:
+                    val = r[0]
+                    report.issues.append(
+                        ValidationIssue(
+                            issue_type="DUPLICATE_UNIQUE_FIELD",
+                            table=table,
+                            record_id=str(val),
+                            details=f"Duplicate value '{val}' for unique column '{col}' in table '{table}'",
+                        )
+                    )
+
+        if dup_issues == 0:
+            report.passed_checks += 1
+
+    def validate_allowed_enums(self, report: ValidationReport) -> None:
+        """Verifies allowed categorical enum values and difficulty ranges across entities."""
+        report.total_checks += 1
+        cursor = self.conn.cursor()
+
+        enum_issues = 0
+        enum_specs = [
+            ("learners", "status", "status NOT IN ('active', 'inactive', 'suspended')", "learner_id"),
+            ("skills", "difficulty_level", "difficulty_level NOT BETWEEN 1 AND 5", "skill_id"),
+            ("content_items", "content_type", "content_type NOT IN ('video', 'reading', 'exercise', 'quiz', 'project')", "content_id"),
+            ("content_items", "difficulty_level", "difficulty_level NOT BETWEEN 1 AND 5", "content_id"),
+            ("attempts", "status", "status NOT IN ('completed', 'in_progress', 'abandoned')", "attempt_id"),
+            ("assessment_results", "passed", "passed NOT IN (0, 1)", "assessment_id"),
+            ("learning_paths", "status", "status NOT IN ('pending', 'in_progress', 'completed', 'skipped')", "path_id"),
+        ]
+
+        for table, col, cond, id_col in enum_specs:
+            cursor.execute(f"SELECT {id_col}, {col} FROM {table} WHERE {cond}")
+            bad = cursor.fetchall()
+            if bad:
+                enum_issues += len(bad)
+                for r in bad:
+                    report.issues.append(
+                        ValidationIssue(
+                            issue_type="INVALID_ENUM_VALUE",
+                            table=table,
+                            record_id=str(r[0]),
+                            details=f"Column '{col}' in '{table}' has invalid value '{r[1]}' violating condition '{cond}'",
+                        )
+                    )
+
+        if enum_issues == 0:
+            report.passed_checks += 1
+
+    def validate_lifecycle_transitions(self, report: ValidationReport) -> None:
+        """Verifies temporal lifecycle consistency across registration, attempts, and recommendations."""
+        report.total_checks += 1
+        cursor = self.conn.cursor()
+        lifecycle_issues = 0
+
+        # Attempt must not predate learner registration
+        cursor.execute("""
+            SELECT a.attempt_id, a.learner_id, a.start_time, l.registered_at
+            FROM attempts a
+            JOIN learners l ON a.learner_id = l.learner_id
+            WHERE a.start_time < l.registered_at
+        """)
+        for r in cursor.fetchall():
+            lifecycle_issues += 1
+            report.issues.append(
+                ValidationIssue(
+                    issue_type="LIFECYCLE_ORDER_VIOLATION",
+                    table="attempts",
+                    record_id=str(r[0]),
+                    details=f"Attempt start_time ({r[2]}) predates learner registration ({r[3]}) for learner {r[1]}",
+                )
+            )
+
+        # Assessment date must not predate attempt start_time
+        cursor.execute("""
+            SELECT ar.assessment_id, ar.assessed_at, a.start_time
+            FROM assessment_results ar
+            JOIN attempts a ON ar.attempt_id = a.attempt_id
+            WHERE ar.assessed_at < a.start_time
+        """)
+        for r in cursor.fetchall():
+            lifecycle_issues += 1
+            report.issues.append(
+                ValidationIssue(
+                    issue_type="LIFECYCLE_ORDER_VIOLATION",
+                    table="assessment_results",
+                    record_id=str(r[0]),
+                    details=f"Assessment date ({r[1]}) predates attempt start_time ({r[2]})",
+                )
+            )
+
+        # Recommendation generation must not predate learner registration
+        cursor.execute("""
+            SELECT r.recommendation_id, r.generated_at, l.registered_at
+            FROM recommendations r
+            JOIN learners l ON r.learner_id = l.learner_id
+            WHERE r.generated_at < l.registered_at
+        """)
+        for r in cursor.fetchall():
+            lifecycle_issues += 1
+            report.issues.append(
+                ValidationIssue(
+                    issue_type="LIFECYCLE_ORDER_VIOLATION",
+                    table="recommendations",
+                    record_id=str(r[0]),
+                    details=f"Recommendation generated_at ({r[1]}) predates learner registration ({r[2]})",
+                )
+            )
+
+        if lifecycle_issues == 0:
+            report.passed_checks += 1
+
+    def validate_arithmetic_reconciliation(self, report: ValidationReport) -> None:
+        """Verifies arithmetic consistency, scoring ranges, and pass/fail thresholds."""
+        report.total_checks += 1
+        cursor = self.conn.cursor()
+        reconciliation_issues = 0
+
+        # Assessment pass flag reconciliation (passed == 1 iff assessed_score >= 0.70)
+        cursor.execute("""
+            SELECT assessment_id, assessed_score, passed
+            FROM assessment_results
+            WHERE (assessed_score >= 0.70 AND passed != 1)
+               OR (assessed_score < 0.70 AND passed != 0)
+        """)
+        for r in cursor.fetchall():
+            reconciliation_issues += 1
+            report.issues.append(
+                ValidationIssue(
+                    issue_type="ARITHMETIC_RECONCILIATION_MISMATCH",
+                    table="assessment_results",
+                    record_id=str(r[0]),
+                    details=f"Assessment {r[0]} with score {r[1]} has inconsistent passed flag ({r[2]})",
+                )
+            )
+
+        # Score range bounds [0.0, 1.0]
+        cursor.execute("SELECT attempt_id, score FROM attempts WHERE score < 0.0 OR score > 1.0")
+        for r in cursor.fetchall():
+            reconciliation_issues += 1
+            report.issues.append(
+                ValidationIssue(
+                    issue_type="VALUE_OUT_OF_BOUNDS",
+                    table="attempts",
+                    record_id=str(r[0]),
+                    details=f"Attempt score {r[1]} is outside valid bounds [0.0, 1.0]",
+                )
+            )
+
+        cursor.execute("SELECT recommendation_id, recommendation_score FROM recommendations WHERE recommendation_score < 0.0 OR recommendation_score > 1.0")
+        for r in cursor.fetchall():
+            reconciliation_issues += 1
+            report.issues.append(
+                ValidationIssue(
+                    issue_type="VALUE_OUT_OF_BOUNDS",
+                    table="recommendations",
+                    record_id=str(r[0]),
+                    details=f"Recommendation score {r[1]} is outside valid bounds [0.0, 1.0]",
+                )
+            )
+
+        # Duration check > 0
+        cursor.execute("SELECT content_id, duration_minutes FROM content_items WHERE duration_minutes <= 0")
+        for r in cursor.fetchall():
+            reconciliation_issues += 1
+            report.issues.append(
+                ValidationIssue(
+                    issue_type="VALUE_OUT_OF_BOUNDS",
+                    table="content_items",
+                    record_id=str(r[0]),
+                    details=f"Duration {r[1]} is not positive",
+                )
+            )
+
+        if reconciliation_issues == 0:
             report.passed_checks += 1
 
     def validate_attempt_timestamps(self, report: ValidationReport) -> None:

@@ -213,10 +213,14 @@ class SyntheticDataGenerator:
 
         content_ids = [c[0] for c in content_items]
 
-        # Pre-index content -> skills mapping
+        # Pre-index content -> skills mapping and learner registration timestamps
         content_to_skills: Dict[str, List[Tuple[str, float]]] = {}
         for cid, sid, weight in content_skills:
             content_to_skills.setdefault(cid, []).append((sid, weight))
+
+        learner_reg: Dict[str, datetime] = {
+            l[0]: datetime.fromisoformat(l[3]) for l in learners
+        }
 
         total_attempts = self.scale_config.num_attempts
         assessment_seq = 1
@@ -226,13 +230,18 @@ class SyntheticDataGenerator:
             content_id = self.rng.choice(content_ids)
             attempt_id = ID_FORMATS["attempt"].format(learner_id, i)
 
-            # Realistic interaction timing
-            days_ago = self.rng.randint(1, 45)
+            # Realistic interaction timing: strictly following learner registration lifecycle
+            reg_dt = learner_reg[learner_id]
+            max_days_prior = max(2, (self.base_time - reg_dt).days)
+            days_ago = self.rng.randint(1, max_days_prior - 1)
             hours_ago = self.rng.randint(1, 23)
             minutes_duration = self.rng.randint(5, 75)
 
             end_dt = self.base_time - timedelta(days=days_ago, hours=hours_ago)
             start_dt = end_dt - timedelta(minutes=minutes_duration)
+            if start_dt < reg_dt:
+                start_dt = reg_dt + timedelta(hours=2)
+                end_dt = start_dt + timedelta(minutes=minutes_duration)
 
             status = self.rng.choices(["completed", "abandoned", "in_progress"], weights=[0.90, 0.07, 0.03])[0]
             if status == "completed":
@@ -465,5 +474,27 @@ class SyntheticDataGenerator:
 
         with open(target_file, "w", encoding="utf-8") as f:
             json.dump(fixtures, f, indent=2)
+
+        # Also write ground_truth.json and ground_truth.csv for direct compliance with Step 7
+        gt_json = target_file.parent / "ground_truth.json"
+        with open(gt_json, "w", encoding="utf-8") as f:
+            json.dump(fixtures, f, indent=2)
+
+        import csv
+        gt_csv = target_file.parent / "ground_truth.csv"
+        with open(gt_csv, "w", encoding="utf-8", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["case_id", "name", "issue_type", "entity", "description", "expected_handling", "detector_method", "payload_json"])
+            for fix in fixtures:
+                writer.writerow([
+                    fix["case_id"],
+                    fix["name"],
+                    fix["issue_type"],
+                    fix["entity"],
+                    fix["description"],
+                    fix["expected_handling"],
+                    fix["detector_method"],
+                    json.dumps(fix["payload"]),
+                ])
 
         return fixtures

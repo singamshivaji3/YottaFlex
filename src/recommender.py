@@ -223,13 +223,17 @@ class LearningRecommender:
         conn: sqlite3.Connection,
         as_of_time: Optional[str] = None,
         top_k: int = 5,
+        max_learners: Optional[int] = None,
     ) -> int:
         """
-        Generates and stores recommendations for all active learners into the recommendations table.
+        Generates and stores recommendations for active learners into the recommendations table.
+        Processes in batches to ensure smooth memory usage and rapid incremental persistence.
         """
         cursor = conn.cursor()
         cursor.execute("SELECT learner_id FROM learners WHERE status = 'active'")
         active_learners = [r["learner_id"] for r in cursor.fetchall()]
+        if max_learners is not None and max_learners > 0:
+            active_learners = active_learners[:max_learners]
 
         cursor.execute("SELECT skill_id, name, domain, difficulty_level FROM skills")
         all_skills = {r["skill_id"]: r for r in cursor.fetchall()}
@@ -243,7 +247,18 @@ class LearningRecommender:
         content_rows = cursor.fetchall()
 
         prereq_graph = self.get_prerequisite_graph(conn)
-        all_recs = []
+        with conn:
+            conn.execute("DELETE FROM recommendations")
+
+        insert_sql = """
+            INSERT INTO recommendations (
+                recommendation_id, learner_id, content_id, skill_id, rank_order,
+                recommendation_score, reason_code, reason_description, algorithm_version, generated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+
+        total_inserted = 0
+        batch = []
         rec_seq = 1
 
         for lid in active_learners:
@@ -259,7 +274,7 @@ class LearningRecommender:
             for r in recs:
                 rec_id = ID_FORMATS["recommendation"].format(rec_seq)
                 rec_seq += 1
-                all_recs.append((
+                batch.append((
                     rec_id,
                     r["learner_id"],
                     r["content_id"],
@@ -272,13 +287,16 @@ class LearningRecommender:
                     r["generated_at"],
                 ))
 
-        with conn:
-            conn.execute("DELETE FROM recommendations")
-            conn.executemany("""
-                INSERT INTO recommendations (
-                    recommendation_id, learner_id, content_id, skill_id, rank_order,
-                    recommendation_score, reason_code, reason_description, algorithm_version, generated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, all_recs)
+            if len(batch) >= 500:
+                with conn:
+                    conn.executemany(insert_sql, batch)
+                total_inserted += len(batch)
+                batch.clear()
 
-        return len(all_recs)
+        if batch:
+            with conn:
+                conn.executemany(insert_sql, batch)
+            total_inserted += len(batch)
+            batch.clear()
+
+        return total_inserted

@@ -47,17 +47,18 @@ def main():
     default_db = SAMPLE_DATA_DIR / "learning_workflow.db"
     full_db = WORKSPACE_DIR / "data" / "full" / "learning_workflow_full.db"
 
-    available_dbs = []
+    db_options = {}
     if default_db.exists():
-        available_dbs.append(str(default_db))
+        db_options["Starter Scale (50 Learners, 600 Attempts - Fast UI)"] = str(default_db)
     if full_db.exists():
-        available_dbs.append(str(full_db))
+        db_options["Full Benchmark Scale (10,000 Learners, 500,000 Attempts - Challenge Volume)"] = str(full_db)
 
-    if not available_dbs:
+    if not db_options:
         st.warning("⚠️ No database found. Please run `py scripts/generate_data.py --scale small` first.")
         return
 
-    selected_db_path = st.sidebar.selectbox("Active Database File", available_dbs, index=0)
+    selected_label = st.sidebar.selectbox("Active Database File", list(db_options.keys()), index=0)
+    selected_db_path = db_options[selected_label]
     conn = load_db_connection(selected_db_path)
 
     # Overview Metrics
@@ -159,9 +160,17 @@ def main():
         """, (selected_lid,))
         recs = [dict(r) for r in cursor.fetchall()]
 
+        if not recs:
+            st.info(f"No precomputed recommendations stored for `{selected_lid}`.")
+            if st.button("⚡ Generate Recommendations in Real-Time"):
+                with st.spinner("Calculating temporal mastery & ranking candidates..."):
+                    recommender = LearningRecommender()
+                    recs = recommender.recommend_for_learner(conn, selected_lid, top_k=5)
+
         if recs:
             for rec in recs:
-                with st.expander(f"Rank #{rec['rank_order']}: {rec['content_title']} (Score: {rec['recommendation_score']:.3f})", expanded=(rec['rank_order'] <= 2)):
+                rec_score = rec.get("recommendation_score", rec.get("score", 0.0))
+                with st.expander(f"Rank #{rec['rank_order']}: {rec['content_title']} (Score: {rec_score:.3f})", expanded=(rec['rank_order'] <= 2)):
                     col_a, col_b = st.columns([1, 2])
                     with col_a:
                         st.markdown(f"**Content ID:** `{rec['content_id']}`")
@@ -170,8 +179,8 @@ def main():
                         st.markdown(f"**Reason Code:** `{rec['reason_code']}`")
                     with col_b:
                         st.info(f"💡 **Explainability Rationale:**\n\n{rec['reason_description']}")
-                        st.progress(rec["recommendation_score"], text=f"Composite Fit Score: {rec['recommendation_score']:.3f}")
-        else:
+                        st.progress(rec_score, text=f"Composite Fit Score: {rec_score:.3f}")
+        elif st.session_state.get("clicked_generate"):
             st.info(f"No active recommendations for learner `{selected_lid}`. All prerequisites may be pending or skills mastered.")
 
     # Tab 3: Prerequisite Graph

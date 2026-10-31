@@ -1,0 +1,104 @@
+[
+  {
+    "case_id": "ANOM-001",
+    "name": "Prerequisite Violation in Recommendation",
+    "issue_type": "PREREQUISITE_VIOLATION",
+    "entity": "recommendations",
+    "description": "Recommendation issued for an advanced skill when learner has not achieved minimum mastery (0.70) on prerequisite skill.",
+    "payload": {
+      "recommendation_id": "REC-ANOM-001",
+      "learner_id": "LRN-000001",
+      "content_id": "CNT-000010",
+      "skill_id": "SKL-000005",
+      "prerequisite_skill_id": "SKL-000001",
+      "learner_prereq_mastery": 0.25,
+      "min_required_threshold": 0.7,
+      "rank_order": 1,
+      "recommendation_score": 0.95,
+      "reason_code": "INVALID_PREREQ_OVERRIDE"
+    },
+    "expected_handling": "Validator flags rule violation; Recommender engine filters out item before ranking.",
+    "detector_method": "validate_recommendation_prerequisites"
+  },
+  {
+    "case_id": "ANOM-002",
+    "name": "Invalid Attempt Timestamp Order",
+    "issue_type": "INVALID_TIMESTAMP_ORDER",
+    "entity": "attempts",
+    "description": "Attempt logged with start_time occurring after end_time.",
+    "payload": {
+      "attempt_id": "ATT-LRN-000001-ANOM02",
+      "learner_id": "LRN-000001",
+      "content_id": "CNT-000001",
+      "start_time": "2026-10-20T16:00:00Z",
+      "end_time": "2026-10-20T14:00:00Z",
+      "score": 0.85,
+      "status": "completed"
+    },
+    "expected_handling": "SQLite CHECK constraint violation; Validator flags timestamp inversion.",
+    "detector_method": "validate_attempt_timestamps"
+  },
+  {
+    "case_id": "ANOM-003",
+    "name": "Content Mapped to Nonexistent Skill",
+    "issue_type": "ORPHAN_CONTENT_SKILL",
+    "entity": "content_skills",
+    "description": "Bridge record references a skill_id that does not exist in the skills table.",
+    "payload": {
+      "content_id": "CNT-000001",
+      "skill_id": "SKL-999999",
+      "relevance_weight": 0.9
+    },
+    "expected_handling": "SQLite FOREIGN KEY constraint rejection; Validator flags orphaned reference.",
+    "detector_method": "validate_foreign_keys"
+  },
+  {
+    "case_id": "ANOM-004",
+    "name": "Mastery Calculation Temporal Future Leakage",
+    "issue_type": "FUTURE_ATTEMPT_LEAKAGE",
+    "entity": "attempts",
+    "description": "Attempt occurring in the future relative to the query as-of timestamp leaked into historical mastery calculation.",
+    "payload": {
+      "attempt_id": "ATT-LRN-000001-ANOM04",
+      "learner_id": "LRN-000001",
+      "skill_id": "SKL-000001",
+      "as_of_time": "2026-10-10T00:00:00Z",
+      "future_attempt_time": "2026-10-18T10:00:00Z",
+      "future_score": 1.0
+    },
+    "expected_handling": "Mastery engine strictly ignores attempts where end_time > as_of_time.",
+    "detector_method": "validate_temporal_safety"
+  },
+  {
+    "case_id": "ANOM-005",
+    "name": "Learning Path Loop Without Progress",
+    "issue_type": "LOOP_WITHOUT_PROGRESS",
+    "entity": "learning_paths",
+    "description": "A learning path containing repeated cyclic steps that revisit previous content items without skill mastery advancement.",
+    "payload": {
+      "path_id": "PATH-2026-ANOM05",
+      "learner_id": "LRN-000002",
+      "skill_id": "SKL-000002",
+      "steps": [
+        {
+          "step_number": 1,
+          "content_id": "CNT-000001"
+        },
+        {
+          "step_number": 2,
+          "content_id": "CNT-000002"
+        },
+        {
+          "step_number": 3,
+          "content_id": "CNT-000001"
+        },
+        {
+          "step_number": 4,
+          "content_id": "CNT-000002"
+        }
+      ]
+    },
+    "expected_handling": "Validator detects duplicate steps/cycles in path graph and flags progress stagnation.",
+    "detector_method": "validate_learning_path_progress"
+  }
+]

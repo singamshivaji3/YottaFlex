@@ -1,44 +1,43 @@
 # YottaFlex Learning Recommendation Workflow — Evaluation Report
 
-**Generated at:** 2026-10-30T20:06:46.315034+00:00 (UTC)
+**Generated at:** 2026-10-31T04:55:59.322591+00:00 (UTC)
 
 ## 1. Relational Entity Counts
 
 | Table Name | Row Count |
 |---|---|
-| `learners` | 50 |
-| `courses` | 5 |
-| `skills` | 20 |
-| `skill_prerequisites` | 23 |
-| `content_items` | 60 |
-| `content_skills` | 126 |
-| `attempts` | 600 |
-| `assessment_results` | 1,170 |
-| `learning_paths` | 98 |
-| `recommendations` | 220 |
+| `learners` | 10,000 |
+| `courses` | 50 |
+| `skills` | 500 |
+| `skill_prerequisites` | 414 |
+| `content_items` | 2,000 |
+| `content_skills` | 4,037 |
+| `attempts` | 500,000 |
+| `assessment_results` | 907,948 |
+| `learning_paths` | 17,161 |
+| `recommendations` | 5,000 |
 
 ## 2. Integrity & Validation Results
 
 - **Baseline Validation Status:** PASS
-- **Total Integrity Checks:** 6
-- **Checks Passed:** 6
+- **Total Integrity Checks:** 11
+- **Checks Passed:** 11
 - **Issues Detected on Clean Baseline:** 0
 
 ## 3. Recommendation Quality & Safety
 
-- **Active Learners:** 44
-- **Learners Receiving Recommendations:** 44
-- **Recommendation Coverage:** 100.0%
-- **Total Recommendations Generated:** 220
-- **Mean Recommendation Score:** 0.8846 (±0.0996)
+- **Active Learners:** 9188
+- **Learners Receiving Recommendations:** 1000
+- **Recommendation Coverage:** 10.9%
+- **Total Recommendations Generated:** 5000
+- **Mean Recommendation Score:** 1.0000 (±0.0000)
 - **Prerequisite Violation Rate:** 0.00% (Expected: 0.00%)
 
 ### Reason Code Breakdown
 
 | Reason Code | Count | Percentage |
 |---|---|---|
-| `SKILL_DEFICIT_HIGH_PRIORITY` | 206 | 93.6% |
-| `SKILL_PRACTICE_RECOMMENDED` | 14 | 6.4% |
+| `SKILL_DEFICIT_HIGH_PRIORITY` | 5000 | 100.0% |
 
 ## 4. Isolated Anomaly Fixtures Benchmark
 
@@ -55,6 +54,5 @@
 
 | Operation | Latency (seconds) |
 |---|---|
-| data_generation | 0.108s |
-| recommendation_generation | 0.037s |
-| exports | 0.098s |
+| data_generation | 88.056s |
+| recommendation_generation | 25.429s |

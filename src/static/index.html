@@ -3,49 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YottaFlex AI — Learning Recommendation Engine</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>YottaFlex AI — Learning Recommendation Engine & Data Quality Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Vis-Network for interactive Prerequisite DAG visualization -->
   <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/vis-network.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/dist/vis-network.min.css">
-
+  
   <style>
     :root {
+      /* Reference Design Theme: Dark Navy Sidebar + Crisp Light Main View */
+      --sidebar-bg: #0B192C;
+      --sidebar-active: #1E88E5;
+      --sidebar-hover: #1E293B;
+      --sidebar-text: #94A3B8;
+      --sidebar-text-active: #FFFFFF;
+      --sidebar-border: #1E293B;
+      
       --bg-page: #F8FAFC;
       --bg-card: #FFFFFF;
       --bg-subtle: #F1F5F9;
       --border-color: #E2E8F0;
+      --border-subtle: #EDF2F7;
       
       --text-navy: #0F172A;
       --text-secondary: #475569;
       --text-muted: #64748B;
       
-      --primary: #2563EB;
-      --primary-hover: #1D4ED8;
-      --primary-subtle: #EFF6FF;
-      --primary-text: #1E40AF;
+      --primary: #1E88E5;
+      --primary-hover: #1565C0;
+      --primary-subtle: #EBF5FF;
+      --primary-text: #0D47A1;
       
-      --success: #059669;
+      --success: #10B981;
       --success-bg: #ECFDF5;
       --success-border: #A7F3D0;
       --success-text: #065F46;
       
-      --warning: #D97706;
+      --warning: #F59E0B;
       --warning-bg: #FFFBEB;
       --warning-border: #FDE68A;
       --warning-text: #92400E;
       
-      --danger: #DC2626;
+      --danger: #EF4444;
       --danger-bg: #FEF2F2;
       --danger-border: #FECACA;
       --danger-text: #991B1B;
       
       --radius-sm: 6px;
-      --radius-md: 10px;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
     }
 
     * {
@@ -64,32 +77,34 @@
       line-height: 1.5;
     }
 
-    /* Clean Sidebar */
+    /* Left Sidebar matching Reference Image */
     .sidebar {
       width: 250px;
-      background-color: #0F172A;
-      border-right: 1px solid #1E293B;
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      padding: 24px 16px;
+      padding: 20px 14px;
       position: sticky;
       top: 0;
       height: 100vh;
+      overflow-y: auto;
+      z-index: 20;
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 28px;
-      padding: 0 6px;
+      margin-bottom: 24px;
+      padding: 0 8px;
     }
 
     .brand-icon {
       width: 32px;
       height: 32px;
-      background: linear-gradient(135deg, #2563EB, #38BDF8);
+      background: linear-gradient(135deg, #1E88E5, #38BDF8);
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
@@ -100,19 +115,10 @@
     }
 
     .brand-title {
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 700;
       color: #FFFFFF;
-      letter-spacing: -0.3px;
-    }
-
-    .nav-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: #64748B;
-      font-weight: 700;
-      margin: 16px 8px 8px;
+      letter-spacing: -0.2px;
     }
 
     .nav-list {
@@ -126,24 +132,24 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
+      padding: 9px 12px;
       border-radius: var(--radius-sm);
-      color: #94A3B8;
+      color: var(--sidebar-text);
       font-weight: 500;
       font-size: 13px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.15s ease-in-out;
       text-decoration: none;
     }
 
     .nav-item:hover {
-      background-color: #1E293B;
+      background-color: var(--sidebar-hover);
       color: #FFFFFF;
     }
 
     .nav-item.active {
-      background-color: var(--primary);
-      color: #FFFFFF;
+      background-color: var(--sidebar-active);
+      color: var(--sidebar-text-active);
       font-weight: 600;
     }
 
@@ -155,14 +161,14 @@
 
     .sidebar-footer {
       margin-top: auto;
-      padding: 14px 6px 0;
-      border-top: 1px solid #1E293B;
-      font-size: 11.5px;
+      padding: 16px 8px 0;
+      border-top: 1px solid var(--sidebar-border);
+      font-size: 11px;
       color: #64748B;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
-    /* Main Content Wrapper */
+    /* Main Content Area */
     .main-wrapper {
       flex: 1;
       display: flex;
@@ -172,10 +178,11 @@
       overflow-y: auto;
     }
 
+    /* Top Page Header */
     .top-header {
       background-color: #FFFFFF;
       border-bottom: 1px solid var(--border-color);
-      padding: 18px 32px;
+      padding: 18px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -185,7 +192,7 @@
     }
 
     .header-left h1 {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 700;
       color: var(--text-navy);
       margin-bottom: 2px;
@@ -196,9 +203,15 @@
       color: var(--text-muted);
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .container {
-      padding: 24px 32px 48px;
-      max-width: 1180px;
+      padding: 24px 30px 48px;
+      max-width: 1240px;
       margin: 0 auto;
       width: 100%;
     }
@@ -213,16 +226,16 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(3px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Clean Modern Cards */
+    /* Card Component */
     .card {
       background-color: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 20px 22px;
+      padding: 20px;
       margin-bottom: 20px;
       box-shadow: var(--shadow-sm);
     }
@@ -274,11 +287,11 @@
     }
 
     .btn-sm {
-      padding: 5px 12px;
+      padding: 5px 10px;
       font-size: 11.5px;
     }
 
-    /* Badges */
+    /* Badges & Status Pills */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -320,7 +333,92 @@
       border-color: var(--border-color);
     }
 
-    /* Forms */
+    /* Metric Stat Cards */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .metric-box {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .metric-icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      background: var(--bg-subtle);
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .metric-data .val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-navy);
+      line-height: 1.1;
+    }
+
+    .metric-data .lbl {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: #FFFFFF;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 11.5px;
+      border-bottom: 1px solid var(--border-color);
+      letter-spacing: 0.2px;
+    }
+
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-navy);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background-color: #F8FAFC;
+    }
+
+    /* Form Controls */
     .form-group {
       display: flex;
       flex-direction: column;
@@ -348,10 +446,10 @@
 
     .form-input:focus, .form-select:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.15);
     }
 
-    /* Clean Progress Bar */
+    /* Progress Bar */
     .progress-bar {
       background-color: #E2E8F0;
       height: 6px;
@@ -367,105 +465,108 @@
       transition: width 0.3s ease;
     }
 
-    /* Table Styles */
-    .table-container {
-      overflow-x: auto;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      background: #FFFFFF;
+    /* Guided Workflow Step Indicators (Panel 9 Style) */
+    .workflow-guide-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12.5px;
-      text-align: left;
-    }
-
-    th {
-      background-color: var(--bg-subtle);
-      color: var(--text-secondary);
-      padding: 9px 14px;
-      font-weight: 600;
-      font-size: 11.5px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    td {
-      padding: 11px 14px;
-      border-bottom: 1px solid var(--border-color);
-      color: var(--text-navy);
-      vertical-align: middle;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover td {
-      background-color: #F8FAFC;
-    }
-
-    /* Preset Buttons Row */
-    .preset-btn {
+    .guide-step-card {
       background: #FFFFFF;
       border: 1px solid var(--border-color);
-      color: var(--text-secondary);
-      padding: 4px 10px;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .guide-step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background: var(--primary);
+      color: #FFFFFF;
+      border-radius: 50%;
       font-size: 11px;
-      font-weight: 500;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: all 0.1s ease;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
 
-    .preset-btn:hover {
-      background: var(--bg-subtle);
+    .guide-step-title {
+      font-size: 13px;
+      font-weight: 700;
       color: var(--text-navy);
+      margin-bottom: 4px;
     }
 
-    .preset-btn.active {
-      background: var(--primary-subtle);
-      border-color: #BFDBFE;
-      color: var(--primary-text);
-      font-weight: 600;
+    .guide-step-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
     }
 
-    /* Sub-tabs */
-    .subtabs {
+    /* Callout & Banner */
+    .callout-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
       display: flex;
-      gap: 4px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Tab Pill Bar */
+    .tab-pills {
+      display: inline-flex;
       background: var(--bg-subtle);
-      padding: 4px;
       border-radius: var(--radius-sm);
+      padding: 3px;
+      gap: 3px;
       margin-bottom: 16px;
       border: 1px solid var(--border-color);
     }
 
-    .subtab {
+    .tab-pill {
       padding: 6px 14px;
       font-size: 12px;
       font-weight: 600;
       color: var(--text-secondary);
-      border: none;
-      background: transparent;
       border-radius: var(--radius-sm);
       cursor: pointer;
+      border: none;
+      background: transparent;
       transition: all 0.15s ease;
     }
 
-    .subtab.active {
+    .tab-pill.active {
       background: #FFFFFF;
       color: var(--text-navy);
       box-shadow: var(--shadow-sm);
     }
 
-    /* Spinner */
+    /* Vis Network Graph */
+    #graph-container {
+      width: 100%;
+      height: 540px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background-color: #FFFFFF;
+      position: relative;
+    }
+
+    /* Loading Spinner */
     .spinner {
       display: inline-block;
       width: 14px;
       height: 14px;
-      border: 2px solid rgba(37, 99, 235, 0.2);
+      border: 2px solid rgba(30, 136, 229, 0.2);
       border-radius: 50%;
       border-top-color: var(--primary);
       animation: spin 0.7s linear infinite;
@@ -480,248 +581,583 @@
 </head>
 <body>
 
-  <!-- Persistent Clean Left Sidebar -->
+  <!-- Left Sidebar Navigation (Matching Reference Image) -->
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-icon">⚡</div>
       <div class="brand-title">YottaFlex AI</div>
     </div>
 
-    <div class="nav-label">Core Engine</div>
-    <ul class="nav-list">
-      <li class="nav-item active" onclick="switchMainTab('recommender')">
-        <span class="nav-icon">🎯</span>
-        <span>Recommender Hub</span>
-      </li>
-      <li class="nav-item" onclick="switchMainTab('quality')">
-        <span class="nav-icon">🛡️</span>
-        <span>Quality & Anomalies</span>
-      </li>
-    </ul>
+    <!-- Active Dataset Selector -->
+    <div style="margin-bottom: 18px; padding: 0 4px;">
+      <label style="font-size: 10px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 5px;">Active Dataset</label>
+      <select id="dataset-selector" onchange="onDatasetSwitched(this.value)" style="width: 100%; font-size: 11.5px; padding: 6px 8px; border-radius: var(--radius-sm); background: #1E293B; color: #FFFFFF; border: 1px solid var(--sidebar-border); outline: none; cursor: pointer;">
+        <option value="full" selected>⚡ Full Benchmark (10,000 Learners)</option>
+        <option value="starter">🌱 Starter Scale (50 Learners)</option>
+      </select>
+    </div>
 
-    <div class="nav-label">Inspection & Tools</div>
     <ul class="nav-list">
-      <li class="nav-item" onclick="switchMainTab('tools')">
+      <li class="nav-item active" onclick="switchNav('home')">
+        <span class="nav-icon">🏠</span>
+        <span>Home</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('mastery')">
+        <span class="nav-icon">👤</span>
+        <span>Learner Mastery</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('recommendations')">
+        <span class="nav-icon">🎯</span>
+        <span>Recommendations</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('simulator')">
+        <span class="nav-icon">⚡</span>
+        <span>Real-time Simulator</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('graph')">
+        <span class="nav-icon">🕸️</span>
+        <span>Prerequisite DAG</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('anomalies')">
+        <span class="nav-icon">🛡️</span>
+        <span>Quality & Anomaly Lab</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('explorer')">
         <span class="nav-icon">🔍</span>
-        <span>Advanced Tools</span>
+        <span>Database Explorer</span>
+      </li>
+      <li class="nav-item" onclick="switchNav('evaluation')">
+        <span class="nav-icon">📊</span>
+        <span>Evaluation & Metrics</span>
       </li>
     </ul>
 
     <div class="sidebar-footer">
+      <div><strong>Scale:</strong> <span id="sidebar-scale-badge" class="badge badge-success" style="font-size: 10px; padding: 2px 6px;">Benchmark (10k)</span></div>
+      <div><strong>Environment:</strong> Local</div>
       <div><strong>Seed:</strong> <code>20261022</code></div>
-      <div><strong>Scale:</strong> 50 Learners (Small)</div>
-      <div><strong>Engine:</strong> EWMA + Prereq DAG</div>
-      <div style="color: var(--success); font-weight: 600; margin-top: 4px;">● System Online</div>
     </div>
   </aside>
 
   <!-- Main View Area -->
   <div class="main-wrapper">
 
-    <!-- Top Clean Header Bar -->
+    <!-- Top Persistent Page Header -->
     <header class="top-header">
       <div class="header-left">
-        <h1 id="top-title">Learning Recommender Hub</h1>
-        <p id="top-subtitle">Recommend next activities based on skills, prerequisites, and content difficulty.</p>
+        <h1 id="page-title">Welcome to YottaFlex AI</h1>
+        <p id="page-subtitle">Personalized learning recommendations powered by data, AI and real-time insights.</p>
       </div>
-      <div>
-        <span id="active-student-pill" class="badge badge-primary" style="padding: 6px 12px; font-size: 12px;">
-          Active: Alice Chen (LRN-000001)
+      <div class="header-actions">
+        <span id="global-learner-badge" class="badge badge-primary" style="padding: 6px 12px; font-size: 12px; cursor: pointer;" onclick="switchNav('mastery')">
+          LRN-000001 &bull; Alice Chen
         </span>
+        <button class="btn btn-outline btn-sm" onclick="showGuidedWorkflowModal()">
+          💡 How Guided Workflow Works
+        </button>
       </div>
     </header>
 
     <div class="container">
 
-      <!-- ================= 1. RECOMMENDER HUB (THE CORE UNIFIED WORKFLOW) ================= -->
-      <section id="panel-recommender" class="panel active">
-
-        <!-- Top Control Bar: Pick Learner + Time Cutoff Toggle -->
-        <div class="card" style="padding: 16px 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 300px;">
-              <span class="form-label" style="margin: 0; white-space: nowrap;">Active Student:</span>
-              <select id="hub-student-select" class="form-select" style="max-width: 320px;" onchange="onStudentChanged(this.value)"></select>
+      <!-- ================= 1. HOME / OVERVIEW PANEL ================= -->
+      <section id="panel-home" class="panel active">
+        <!-- 4 Metric Cards Row -->
+        <div class="metrics-row">
+          <div class="metric-box">
+            <div class="metric-icon-wrap">👥</div>
+            <div class="metric-data">
+              <div class="val" id="kpi-learners">10,000</div>
+              <div class="lbl">Active Learners</div>
             </div>
-
-            <!-- Temporal Cutoff Filter (Demonstrates zero future leakage) -->
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span class="form-label" style="margin: 0; white-space: nowrap;">Time Cutoff:</span>
-              <button id="btn-cutoff-full" class="preset-btn active" onclick="setHubCutoff('2026-10-22T12:00:00Z', this)">Full History</button>
-              <button id="btn-cutoff-7d" class="preset-btn" onclick="setHubCutoff('2026-10-15T00:00:00Z', this)">1 Week Prior</button>
-              <button id="btn-cutoff-30d" class="preset-btn" onclick="setHubCutoff('2026-09-22T00:00:00Z', this)">30 Days Prior</button>
+          </div>
+          <div class="metric-box">
+            <div class="metric-icon-wrap">📚</div>
+            <div class="metric-data">
+              <div class="val" id="kpi-courses">50</div>
+              <div class="lbl">Courses</div>
+            </div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-icon-wrap">💡</div>
+            <div class="metric-data">
+              <div class="val" id="kpi-skills">500</div>
+              <div class="lbl">Skills</div>
+            </div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-icon-wrap">💬</div>
+            <div class="metric-data">
+              <div class="val" id="kpi-attempts">500,000</div>
+              <div class="lbl">Interaction Attempts</div>
             </div>
           </div>
         </div>
 
-        <!-- Student Profile & Competency Breakdown Card -->
+        <!-- 2 Prominent Action Cards Side-by-Side (Panel 1 Reference) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+          <div class="callout-card">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span style="font-size: 18px;">🎯</span>
+                <h3 style="font-size: 15px; font-weight: 700; color: var(--text-navy);">Start a Recommendation</h3>
+              </div>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
+                Select a learner, review their mastery, and get personalized learning recommendations.
+              </p>
+              <button class="btn btn-primary" onclick="switchNav('recommendations')">
+                Start Now &rarr;
+              </button>
+            </div>
+          </div>
+
+          <div class="callout-card">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span style="font-size: 18px;">🛡️</span>
+                <h3 style="font-size: 15px; font-weight: 700; color: var(--text-navy);">Run Data Quality Checks</h3>
+              </div>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
+                Validate your data, detect anomalies, and ensure system integrity.
+              </p>
+              <button class="btn btn-outline" onclick="switchNav('anomalies'); runBaselineValidation();">
+                Run Validation
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Start Guide (Panel 1 Reference) -->
         <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div id="hub-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: #2563EB; color: #FFF; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center;">
+          <div class="card-title">
+            <span>Quick Start Guide</span>
+            <span class="badge badge-neutral">Beginner Friendly</span>
+          </div>
+          <div class="workflow-guide-row">
+            <div class="guide-step-card">
+              <div class="guide-step-badge">1</div>
+              <div class="guide-step-title">Select Learner</div>
+              <div class="guide-step-desc">Choose from our <span id="guide-learners-desc">10,000</span> active benchmark learners cohort.</div>
+            </div>
+            <div class="guide-step-card">
+              <div class="guide-step-badge">2</div>
+              <div class="guide-step-title">Review Mastery</div>
+              <div class="guide-step-desc">See skill progress, EWMA scores & attempt history.</div>
+            </div>
+            <div class="guide-step-card">
+              <div class="guide-step-badge">3</div>
+              <div class="guide-step-title">Get Recommendations</div>
+              <div class="guide-step-desc">View ranked activities & prerequisite gates.</div>
+            </div>
+            <div class="guide-step-card">
+              <div class="guide-step-badge">4</div>
+              <div class="guide-step-title">Check Data Quality</div>
+              <div class="guide-step-desc">Run validation & inspect 5 anomaly fixtures.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 2. LEARNER MASTERY PANEL ================= -->
+      <section id="panel-mastery" class="panel">
+        <!-- Top Filter Bar (Search Learner + Time Cutoff) -->
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
+              <span class="form-label" style="margin: 0; white-space: nowrap;">Select Learner:</span>
+              <input type="text" id="mastery-search-input" class="form-input" placeholder="Search by name or ID..." style="max-width: 220px;" oninput="filterMasteryLearners()">
+              <select id="mastery-learner-select" class="form-select" style="max-width: 280px;" onchange="onGlobalLearnerChanged(this.value)"></select>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="form-label" style="margin: 0; white-space: nowrap;">Time Cutoff:</span>
+              <select id="mastery-cutoff-select" class="form-select" style="width: 200px;" onchange="onCutoffChanged(this.value)">
+                <option value="2026-10-22T12:00:00Z" selected>Default (2026-10-22)</option>
+                <option value="2026-10-15T00:00:00Z">Last 7 Days (2026-10-15)</option>
+                <option value="2026-09-22T00:00:00Z">Last 30 Days (2026-09-22)</option>
+                <option value="">Present (All History)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Learner Profile Summary Card (Panel 2 Reference) -->
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div id="mastery-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: #1E88E5; color: #FFF; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center;">
                 AC
               </div>
               <div>
-                <h3 id="hub-student-name" style="font-size: 15px; font-weight: 700; color: var(--text-navy);">Alice Chen</h3>
+                <div id="mastery-learner-name" style="font-size: 16px; font-weight: 700; color: var(--text-navy);">Alice Chen</div>
                 <div style="font-size: 12px; color: var(--text-muted);">
-                  Learner ID: <strong id="hub-student-id">LRN-000001</strong> &bull; Status: <span class="badge badge-success">Active</span>
+                  Learner ID: <strong id="mastery-learner-id">LRN-000001</strong> &bull; <span id="mastery-learner-email">alice.chen@example.org</span>
                 </div>
               </div>
             </div>
 
-            <div style="display: flex; gap: 20px;">
+            <div style="display: flex; gap: 24px;">
               <div>
                 <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Overall Mastery</div>
-                <div id="hub-overall-mastery" style="font-size: 18px; font-weight: 700; color: #2563EB;">72%</div>
+                <div id="mastery-stat-overall" style="font-size: 20px; font-weight: 700; color: #1E88E5;">72%</div>
               </div>
               <div>
-                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Completed Attempts</div>
-                <div id="hub-attempts-count" style="font-size: 18px; font-weight: 700; color: var(--text-navy);">12</div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Total Assessments</div>
+                <div id="mastery-stat-assessments" style="font-size: 20px; font-weight: 700; color: var(--text-navy);">12</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Last Activity</div>
+                <div id="mastery-stat-lastactivity" style="font-size: 14px; font-weight: 600; color: var(--text-navy); margin-top: 4px;">2026-10-20</div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Skill Competencies Table -->
-          <div class="card-title" style="margin-bottom: 8px;">
-            <span>Skill Competencies (EWMA Mastery)</span>
-            <span style="font-size: 11.5px; font-weight: normal; color: var(--text-muted);">Higher scores indicate mastered skills</span>
+        <!-- 2 Columns: Skill Breakdown (Left) and Assessment History (Right) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <!-- Left: Skill Mastery Breakdown -->
+          <div class="card">
+            <div class="card-title">
+              <span>Skill Mastery Breakdown</span>
+              <span class="badge badge-primary">EWMA Algorithm</span>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Skill</th>
+                    <th>Mastery</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="mastery-breakdown-tbody">
+                  <tr><td colspan="3"><div class="spinner"></div> Loading skills...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: Recent Assessment History -->
+          <div class="card">
+            <div class="card-title">
+              <span>Recent Assessment History</span>
+              <span class="badge badge-neutral">Telemetry Log</span>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Content</th>
+                    <th>Score</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody id="mastery-history-tbody">
+                  <tr><td colspan="4"><div class="spinner"></div> Loading assessment history...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 3. LEARNING RECOMMENDATIONS PANEL ================= -->
+      <section id="panel-recommendations" class="panel">
+        <!-- Top Bar: Learner Selector + Generate Recommendations Button -->
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span class="form-label" style="margin: 0;">Learner:</span>
+              <input type="text" id="recs-search-input" class="form-input" placeholder="Search learner..." style="max-width: 170px;" oninput="filterRecsLearners()">
+              <select id="recs-learner-select" class="form-select" style="min-width: 260px;" onchange="onGlobalLearnerChanged(this.value)"></select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 11.5px; color: var(--text-muted);" id="recs-last-updated">Last updated: 2026-10-22 12:00</span>
+              <button class="btn btn-primary" onclick="loadRecommendationsData()">
+                Generate Recommendations
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Top Card + 3 Small Stat Boxes (Panel 3 Reference) -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <!-- Top Recommendation Box -->
+          <div class="card" style="margin-bottom: 0; background: linear-gradient(to right, #FFFFFF, #F8FAFC); border-left: 4px solid var(--primary);">
+            <div style="font-size: 11.5px; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
+              🌟 Top Recommendation
+            </div>
+            <div id="top-rec-title" style="font-size: 16px; font-weight: 700; color: var(--text-navy); margin-bottom: 4px;">
+              Machine Learning Fundamentals
+            </div>
+            <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px;">
+              Score: <strong id="top-rec-score" style="color: var(--primary);">92%</strong> &bull; Difficulty: <strong id="top-rec-diff">Medium</strong> &bull; Skill: <strong id="top-rec-skill">Machine Learning</strong>
+            </div>
+            <div id="top-rec-why" style="font-size: 12px; color: var(--text-secondary); background: #F1F5F9; padding: 6px 10px; border-radius: var(--radius-sm);">
+              High skill gap in target competency. Content difficulty matches estimated ability.
+            </div>
+          </div>
+
+          <!-- 3 Stats Boxes in a Grid -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <div class="card" style="margin-bottom: 0; padding: 14px; text-align: center;">
+              <div id="stat-recs-recommended" style="font-size: 22px; font-weight: 700; color: var(--primary);">5</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Recommended</div>
+            </div>
+            <div class="card" style="margin-bottom: 0; padding: 14px; text-align: center;">
+              <div id="stat-recs-blocked" style="font-size: 22px; font-weight: 700; color: var(--warning);">2</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Blocked (Prereq)</div>
+            </div>
+            <div class="card" style="margin-bottom: 0; padding: 14px; text-align: center;">
+              <div id="stat-recs-total" style="font-size: 22px; font-weight: 700; color: var(--text-navy);">7</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Total Evaluated</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Learning Activities Table (Panel 3 Reference) -->
+        <div class="card">
+          <div class="card-title">
+            <span>Recommended Learning Activities</span>
+            <span class="badge badge-success">Ranked & Gated</span>
           </div>
 
           <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Skill Name</th>
-                  <th>Domain</th>
-                  <th>Mastery Score</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="hub-skills-tbody">
-                <tr><td colspan="4"><div class="spinner"></div> Loading competencies...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Recommendations Section -->
-        <div class="card">
-          <div class="card-title">
-            <span>Recommended Next Learning Activities</span>
-            <button class="btn btn-primary btn-sm" onclick="loadRecommendations()">
-              🔄 Refresh Recommendations
-            </button>
-          </div>
-
-          <!-- Top Highlight Recommendation Banner -->
-          <div id="hub-top-pick-card" style="background: linear-gradient(to right, #EFF6FF, #FFFFFF); border: 1px solid #BFDBFE; border-left: 4px solid var(--primary); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <span style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase;">Top Recommendation</span>
-              <span id="hub-top-score" class="badge badge-primary">Match Score: 92%</span>
-            </div>
-            <div id="hub-top-title" style="font-size: 15px; font-weight: 700; color: var(--text-navy); margin-bottom: 4px;">
-              Machine Learning Fundamentals
-            </div>
-            <div id="hub-top-why" style="font-size: 12px; color: var(--text-secondary);">
-              Target skill has a high competency deficit. Prerequisites verified. Content difficulty matches estimated ability.
-            </div>
-          </div>
-
-          <!-- Ranked Activities Table -->
-          <div class="table-container" style="margin-bottom: 16px;">
-            <table>
-              <thead>
-                <tr>
                   <th style="width: 30px;">#</th>
-                  <th>Activity Name</th>
+                  <th>Activity</th>
                   <th>Type</th>
                   <th>Difficulty</th>
-                  <th>Target Skill</th>
+                  <th>Skills</th>
                   <th>Score</th>
                   <th>Status</th>
                   <th>Why Recommended</th>
                 </tr>
               </thead>
-              <tbody id="hub-recs-tbody">
-                <tr><td colspan="8"><div class="spinner"></div> Loading recommendations...</td></tr>
+              <tbody id="recommendations-table-tbody">
+                <tr><td colspan="8"><div class="spinner"></div> Generating recommendations...</td></tr>
               </tbody>
             </table>
           </div>
-
-          <!-- Prerequisite Blocked Activities Notice -->
-          <div id="hub-blocked-box" style="background: #FFFBEB; border: 1px solid #FDE68A; border-left: 4px solid var(--warning); border-radius: var(--radius-sm); padding: 12px 16px;">
-            <div style="font-weight: 700; color: var(--warning-text); font-size: 12.5px; margin-bottom: 4px;">
-              🔒 Prerequisite Enforcement Gate (Hard Rule)
-            </div>
-            <div id="hub-blocked-text" style="font-size: 12px; color: var(--warning-text);">
-              Loading prerequisite check...
-            </div>
-          </div>
         </div>
-
-        <!-- Real-Time Simulator Widget (Right here on the same page!) -->
-        <div class="card" style="border-top: 3px solid var(--primary);">
-          <div class="card-title">
-            <span>⚡ Test in Real-Time: Simulate an Activity Attempt</span>
-            <span class="badge badge-primary">Updates Live Without Tab Switching</span>
-          </div>
-
-          <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px;">
-            Submit a simulated quiz or project for <strong><span id="sim-active-student-name">Alice Chen</span></strong> to see her mastery score and recommendations update in real time.
-          </p>
-
-          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: flex-end;">
-            <div class="form-group">
-              <label class="form-label">Select Content Item:</label>
-              <select id="hub-sim-content" class="form-select"></select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Score (0 to 100):</label>
-              <input type="number" id="hub-sim-score" class="form-input" value="95" min="0" max="100">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Duration (mins):</label>
-              <input type="number" id="hub-sim-duration" class="form-input" value="20" min="1" max="180">
-            </div>
-
-            <div>
-              <button class="btn btn-primary" onclick="submitHubAttempt()">
-                ⚡ Submit Attempt
-              </button>
-            </div>
-          </div>
-
-          <div id="hub-sim-alert" style="margin-top: 14px; display: none;"></div>
-        </div>
-
       </section>
 
 
-      <!-- ================= 2. DATA QUALITY & ANOMALY LAB ================= -->
-      <section id="panel-quality" class="panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <div>
-            <h2 style="font-size: 16px; font-weight: 700; color: var(--text-navy);">Data Integrity & Anomaly Lab</h2>
-            <p style="font-size: 12.5px; color: var(--text-muted);">
-              Clean baseline data is verified, while the five required challenge anomalies are isolated and detected.
-            </p>
+      <!-- ================= 4. REAL-TIME SIMULATOR PANEL ================= -->
+      <section id="panel-simulator" class="panel">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+          <!-- Left: Simulation Form -->
+          <div class="card">
+            <div class="card-title">1. Select Content</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label">Choose content item:</label>
+                <select id="sim-content-select" class="form-select" onchange="onSimContentSelected(this.value)"></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Skill Tag:</label>
+                <input type="text" id="sim-skill-tag" class="form-input" value="Python Basics" readonly style="background: var(--bg-subtle);">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Difficulty:</label>
+                <input type="text" id="sim-difficulty" class="form-input" value="Medium" readonly style="background: var(--bg-subtle);">
+              </div>
+            </div>
+
+            <div class="card-title" style="margin-top: 10px;">2. Enter Attempt Details</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+              <div class="form-group">
+                <label class="form-label">Score (0-100):</label>
+                <input type="number" id="sim-score-input" class="form-input" value="85" min="0" max="100">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Duration (minutes):</label>
+                <input type="number" id="sim-duration-input" class="form-input" value="18" min="1" max="180">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Learner:</label>
+                <select id="sim-learner-select" class="form-select" onchange="onGlobalLearnerChanged(this.value)"></select>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="submitSimulatedAttempt()">
+              Submit Attempt
+            </button>
+
+            <!-- Success Alert Box (Panel 4 Reference) -->
+            <div id="sim-success-alert" style="margin-top: 18px; display: none;"></div>
           </div>
-          <button class="btn btn-primary btn-sm" onclick="runValidationCheck()">
-            Run Baseline Validation
+
+          <!-- Right: What Will Happen Card -->
+          <div class="card">
+            <div class="card-title">What will happen?</div>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 12.5px; color: var(--text-secondary);">
+              <li style="display: flex; gap: 8px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                <span>Attempt will be saved to the SQLite database</span>
+              </li>
+              <li style="display: flex; gap: 8px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                <span>Mastery will be recalculated via EWMA</span>
+              </li>
+              <li style="display: flex; gap: 8px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                <span>Recommendations will be refreshed</span>
+              </li>
+              <li style="display: flex; gap: 8px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                <span>You will see the updated results below</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Latest Attempt Section (Panel 4 Reference) -->
+        <div class="card" style="margin-top: 16px;">
+          <div class="card-title">Latest Attempt</div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Content</th>
+                  <th>Score</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="sim-latest-tbody">
+                <tr>
+                  <td>Python Basics Quiz</td>
+                  <td>85%</td>
+                  <td>2026-10-22 10:30</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 5. SKILL PREREQUISITE GRAPH PANEL ================= -->
+      <section id="panel-graph" class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <div style="font-size: 13px; color: var(--text-muted);">
+            Visualize skill dependencies and ensure an acyclic learning path.
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="dag-cycle-badge" class="badge badge-success">Acyclic DAG Verified (0 Cycles)</span>
+            <div id="dag-legend-container" style="font-size: 11.5px; color: var(--text-muted); display: flex; gap: 10px; font-weight: 600;">
+              <span style="color: #059669;">🟢 Mastered (&ge;70%)</span>
+              <span style="color: #D97706;">🟡 In Progress / Eligible</span>
+              <span style="color: #64748B;">🔒 Locked (Prereq Required)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Graph Controls Bar -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; padding: 10px 14px; background: var(--bg-subtle); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+          <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px;">
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-navy); white-space: nowrap;">Curriculum Track:</label>
+            <select id="dag-track-select" onchange="onDagTrackChange(this.value)" style="padding: 6px 10px; font-size: 12px; font-weight: 600; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: #FFFFFF; color: var(--text-navy); cursor: pointer; flex: 1; max-width: 380px;">
+              <option value="learner" selected id="dag-opt-learner">👤 Active Learner's Path (Personalized)</option>
+              <option value="core">🌟 Featured Core Curriculum (Reference Path)</option>
+              <option value="ml">🤖 Machine Learning & AI Track</option>
+              <option value="data">📊 Data Engineering & Analytics Track</option>
+              <option value="backend">💻 Backend Systems Track</option>
+              <option value="cloud">☁️ Cloud Architecture & DevOps</option>
+              <option value="all">🌐 Full Benchmark Graph (500 Skills)</option>
+            </select>
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="text" id="dag-search-input" placeholder="🔍 Find skill in graph..." oninput="onDagSearchInput(this.value)" style="width: 170px; padding: 6px 10px; font-size: 11.5px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); outline: none;">
+            <button type="button" class="btn btn-secondary" onclick="zoomDag(1.25)" title="Zoom In" style="padding: 6px 10px; font-size: 11.5px; font-weight: 700;">➕ Zoom In</button>
+            <button type="button" class="btn btn-secondary" onclick="zoomDag(0.8)" title="Zoom Out" style="padding: 6px 10px; font-size: 11.5px; font-weight: 700;">➖ Zoom Out</button>
+            <button type="button" class="btn btn-secondary" onclick="resetDagView()" title="Fit View" style="padding: 6px 10px; font-size: 11.5px; font-weight: 700;">⛶ Fit View</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+          <div class="card" style="padding: 10px;">
+            <div id="graph-container"></div>
+          </div>
+
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Skill Details</span>
+                <span id="dag-detail-pill" class="badge" style="font-size: 10.5px; background: #ECFDF5; color: #065F46; border: 1px solid #10B981;">Mastered</span>
+              </div>
+              
+              <div id="graph-skill-details" style="margin-top: 10px;">
+                <h3 id="dag-detail-name" style="font-size: 17px; font-weight: 700; color: var(--text-navy); margin-bottom: 3px;">
+                  Python Basics
+                </h3>
+                <div id="dag-detail-id" style="font-size: 11px; font-family: monospace; color: var(--text-muted); margin-bottom: 8px;">
+                  ID: SKL-CORE-01 &bull; Foundations
+                </div>
+                
+                <div id="dag-detail-learner-status-box" style="background: var(--bg-subtle); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 12px; font-size: 12px;">
+                  <div style="font-weight: 700; color: var(--text-navy); margin-bottom: 2px;" id="dag-detail-learner-header">Active Learner Status</div>
+                  <div id="dag-detail-learner-desc" style="color: var(--text-secondary);">Mastered with score &ge; 70%. Prerequisite met for downstream skills.</div>
+                </div>
+
+                <div id="dag-detail-desc" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.45; margin-bottom: 12px;">
+                  Core syntax, data structures, and algorithmic scripting in Python.
+                </div>
+
+                <div style="border-top: 1px solid var(--border-color); padding-top: 10px; margin-bottom: 10px;">
+                  <div class="form-label" style="margin-bottom: 5px; font-weight: 700; color: var(--text-navy);">Required Prerequisites:</div>
+                  <ul id="dag-detail-prereqs" style="list-style: none; font-size: 12px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; padding-left: 0;">
+                    <li style="color: var(--success); font-weight: 600;">✓ None (Entry-level foundational skill)</li>
+                  </ul>
+                </div>
+
+                <div style="border-top: 1px solid var(--border-color); padding-top: 10px; margin-bottom: 12px;">
+                  <div class="form-label" style="margin-bottom: 5px; font-weight: 700; color: var(--text-navy);">Dependent Skills (Unlocked next):</div>
+                  <ul id="dag-detail-dependents" style="list-style: none; font-size: 12px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; padding-left: 0;">
+                    <li>&bull; <strong>Data Analysis</strong> (Requires 70% mastery)</li>
+                    <li>&bull; <strong>SQL Foundations</strong> (Requires 70% mastery)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; gap: 8px;">
+              <button type="button" class="btn btn-secondary" style="flex: 1; font-size: 11.5px; padding: 6px;" onclick="focusActiveSkill()">🎯 Center in View</button>
+              <button type="button" class="btn btn-secondary" style="flex: 1; font-size: 11.5px; padding: 6px;" onclick="viewSkillInExplorer()">🔍 In DB Explorer</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= 6. QUALITY & ANOMALY LAB PANEL ================= -->
+      <section id="panel-anomalies" class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div style="font-size: 13px; color: var(--text-muted);">
+            Validate your data and detect the five challenge anomalies.
+          </div>
+          <button class="btn btn-primary" onclick="runBaselineValidation()">
+            Run Validation
           </button>
         </div>
 
-        <!-- 2 Top Status Cards -->
+        <!-- 2 Top Status Cards (Panel 6 Reference) -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
           <div class="card" style="margin-bottom: 0; border-left: 4px solid var(--success);">
             <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 22px;">✅</span>
+              <span style="font-size: 22px; color: var(--success);">✅</span>
               <div>
-                <div style="font-weight: 700; font-size: 14px; color: var(--text-navy);">Clean Baseline Integrity</div>
-                <div id="qa-baseline-summary" style="font-size: 12px; color: var(--text-muted);">
-                  <strong>6 / 6 checks passed</strong> &mdash; 0 violations found in baseline tables.
+                <div style="font-size: 14.5px; font-weight: 700; color: var(--text-navy);">Baseline Data Integrity</div>
+                <div id="qa-baseline-text" style="font-size: 12px; color: var(--text-muted);">
+                  <strong>6 / 6 checks passed</strong> &mdash; No issues found in core data.
                 </div>
               </div>
             </div>
@@ -729,38 +1165,93 @@
 
           <div class="card" style="margin-bottom: 0; border-left: 4px solid var(--danger);">
             <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 22px;">⚠️</span>
+              <span style="font-size: 22px; color: var(--danger);">⚠️</span>
               <div>
-                <div style="font-weight: 700; font-size: 14px; color: var(--text-navy);">Isolated Challenge Anomalies</div>
+                <div style="font-size: 14.5px; font-weight: 700; color: var(--text-navy);">Anomaly Detection</div>
                 <div style="font-size: 12px; color: var(--text-muted);">
-                  <strong style="color: var(--danger);">5 / 5 detected</strong> &mdash; All required edge cases isolated.
+                  <strong style="color: var(--danger);">5 / 5 detected</strong> &mdash; All configured anomalies found.
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- The 5 Anomaly Test Cases Table -->
-        <div class="card">
-          <div class="card-title">
-            <span>Challenge Anomaly Scenarios (Ground Truth Fixtures)</span>
-            <span class="badge badge-neutral">Isolated Test Payloads</span>
-          </div>
+        <!-- Tab Toggle: Baseline Checks | Anomaly Cases (Panel 6 Reference) -->
+        <div class="tab-pills">
+          <button id="qa-tab-anomalies" class="tab-pill active" onclick="switchQATab('anomalies')">Anomaly Cases</button>
+          <button id="qa-tab-baseline" class="tab-pill" onclick="switchQATab('baseline')">Baseline Checks</button>
+        </div>
 
+        <!-- Anomaly Cases Table -->
+        <div id="qa-view-anomalies" class="card">
           <div class="table-container">
             <table>
               <thead>
                 <tr>
                   <th style="width: 30px;">#</th>
-                  <th>Scenario Name</th>
-                  <th>Issue Code</th>
-                  <th>Detection Status</th>
-                  <th>Handling & Details</th>
-                  <th>Test Rule</th>
+                  <th>Anomaly Case</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Details</th>
+                  <th>Action</th>
                 </tr>
               </thead>
-              <tbody id="quality-anomalies-tbody">
+              <tbody id="anomalies-tbody">
                 <tr><td colspan="6"><div class="spinner"></div> Loading anomaly fixtures...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Baseline Checks View -->
+        <div id="qa-view-baseline" class="card" style="display: none;">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Check Domain</th>
+                  <th>Rule Verified</th>
+                  <th>Status</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Primary & Foreign Keys</strong></td>
+                  <td>PRAGMA foreign_keys = ON; all references resolved</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>0 orphan records found across all 10 tables</td>
+                </tr>
+                <tr>
+                  <td><strong>Timestamp Chronology</strong></td>
+                  <td>CHECK (start_time &le; end_time)</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>All 600 attempt durations are positive and monotonic</td>
+                </tr>
+                <tr>
+                  <td><strong>Prerequisite DAG</strong></td>
+                  <td>Kahn's Topological Sorting Acyclicity</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>0 circular prerequisite dependencies detected</td>
+                </tr>
+                <tr>
+                  <td><strong>Score Bounds</strong></td>
+                  <td>CHECK (score BETWEEN 0.0 AND 1.0)</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>100% of scores fall within valid bounds</td>
+                </tr>
+                <tr>
+                  <td><strong>Recommendation Gating</strong></td>
+                  <td>Disqualify activities with unmet prerequisites</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>0 prerequisite-violating recommendations generated</td>
+                </tr>
+                <tr>
+                  <td><strong>Deterministic Seed</strong></td>
+                  <td>Fixed seed 20261022 reproducibility</td>
+                  <td><span class="badge badge-success">Passed</span></td>
+                  <td>10/10 table SHA-256 hashes match across independent runs</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -768,34 +1259,13 @@
       </section>
 
 
-      <!-- ================= 3. ADVANCED TOOLS (DAG, EXPLORER, METRICS) ================= -->
-      <section id="panel-tools" class="panel">
-
-        <!-- Sub-tabs to easily switch between advanced tools -->
-        <div class="subtabs">
-          <button id="subtab-dag" class="subtab active" onclick="switchSubtool('dag')">🕸️ Prerequisite DAG</button>
-          <button id="subtab-explorer" class="subtab" onclick="switchSubtool('explorer')">🔍 Database Explorer</button>
-          <button id="subtab-metrics" class="subtab" onclick="switchSubtool('metrics')">📊 Evaluation Metrics</button>
-        </div>
-
-        <!-- Subtool 1: DAG Graph -->
-        <div id="tool-view-dag" class="card">
-          <div class="card-title">
-            <span>Skill Prerequisite Directed Acyclic Graph</span>
-            <span id="tool-dag-badge" class="badge badge-success">Acyclic DAG Verified (0 Cycles)</span>
-          </div>
-          <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">
-            Pedagogical dependency graph. Arrows indicate prerequisite dependencies: <code>Prerequisite Skill &rarr; Target Skill</code>.
-          </p>
-          <div id="dag-network-box" style="height: 440px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: #FFFFFF;"></div>
-        </div>
-
-        <!-- Subtool 2: Database Explorer -->
-        <div id="tool-view-explorer" class="card" style="display: none;">
-          <div class="card-title">
-            <span>Relational Table Explorer</span>
-            <div style="display: flex; gap: 10px; align-items: center;">
-              <select id="tool-table-select" class="form-select" style="width: 200px;" onchange="loadTableRecords(this.value)">
+      <!-- ================= 7. DATABASE EXPLORER PANEL ================= -->
+      <section id="panel-explorer" class="panel">
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 10px; flex: 1; flex-wrap: wrap;">
+              <span class="form-label" style="margin: 0; white-space: nowrap;">Select Table:</span>
+              <select id="explorer-table-select" class="form-select" style="max-width: 200px;" onchange="onExplorerTableChanged(this.value)">
                 <option value="learners">learners</option>
                 <option value="courses">courses</option>
                 <option value="skills">skills</option>
@@ -807,314 +1277,662 @@
                 <option value="learning_paths">learning_paths</option>
                 <option value="recommendations">recommendations</option>
               </select>
+              <div style="display: flex; gap: 6px; align-items: center; flex: 1; max-width: 380px;">
+                <input type="text" id="explorer-search" class="form-input" placeholder="Search in table (e.g. LRN-009999)..." oninput="onExplorerInputDebounced()" onkeydown="if(event.key==='Enter') onExplorerSearch()">
+                <button class="btn btn-primary btn-sm" onclick="onExplorerSearch()" id="explorer-search-btn" style="white-space: nowrap;">
+                  🔍 Search
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="onExplorerClearSearch()" id="explorer-clear-btn" style="display: none; white-space: nowrap;">
+                  ✕ Clear
+                </button>
+              </div>
+            </div>
+
+            <div style="font-size: 12px; color: var(--text-muted);">
+              Show <strong>25</strong> rows per query
             </div>
           </div>
-          <div id="tool-table-records">
+        </div>
+
+        <div class="card">
+          <div id="explorer-content-container">
             <div class="spinner"></div> Loading table records...
           </div>
         </div>
+      </section>
 
-        <!-- Subtool 3: Evaluation Metrics -->
-        <div id="tool-view-metrics" class="card" style="display: none;">
-          <div class="card-title">
-            <span>Evaluation & Verification Metrics</span>
-            <span class="badge badge-success">Verifiable Outputs</span>
+
+      <!-- ================= 8. EVALUATION & METRICS PANEL ================= -->
+      <section id="panel-evaluation" class="panel">
+        <!-- Controls Bar -->
+        <div class="card" style="padding: 16px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="form-label" style="margin: 0;">Date Range:</span>
+              <select class="form-select" style="width: 140px;">
+                <option>Last 7 Days</option>
+                <option selected>Full History</option>
+              </select>
+              <span class="form-label" style="margin: 0; margin-left: 8px;">Dataset:</span>
+              <select class="form-select" style="width: 160px;">
+                <option selected>Active Cohort (50)</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="loadEvaluationMetricsData()">
+              Run Evaluation
+            </button>
           </div>
+        </div>
 
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px;">
-            <div class="card" style="margin-bottom: 0; padding: 14px;">
-              <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Precision@K</div>
-              <div style="font-size: 20px; font-weight: 700; color: var(--text-navy);">0.82</div>
+        <!-- 4 Top Metric Cards (Panel 8 Reference) -->
+        <div class="metrics-row">
+          <div class="metric-box">
+            <div class="metric-data">
+              <div class="lbl">Precision@K</div>
+              <div class="val" id="eval-precision">0.82</div>
               <div style="font-size: 11px; color: var(--success); font-weight: 600;">+4% vs baseline</div>
             </div>
-            <div class="card" style="margin-bottom: 0; padding: 14px;">
-              <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Recall@K</div>
-              <div style="font-size: 20px; font-weight: 700; color: var(--text-navy);">0.76</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-data">
+              <div class="lbl">Recall@K</div>
+              <div class="val" id="eval-recall">0.76</div>
               <div style="font-size: 11px; color: var(--success); font-weight: 600;">+3% vs baseline</div>
             </div>
-            <div class="card" style="margin-bottom: 0; padding: 14px;">
-              <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Recommendation Coverage</div>
-              <div id="tool-metric-coverage" style="font-size: 20px; font-weight: 700; color: var(--text-navy);">100%</div>
-              <div style="font-size: 11px; color: var(--text-muted);">Zero cold-start drop</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-data">
+              <div class="lbl">Coverage</div>
+              <div class="val" id="eval-coverage">1.00</div>
+              <div style="font-size: 11px; color: var(--text-muted);">100% active learners</div>
             </div>
-            <div class="card" style="margin-bottom: 0; padding: 14px;">
-              <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Total DB Records</div>
-              <div id="tool-metric-totalrecords" style="font-size: 20px; font-weight: 700; color: var(--text-navy);">2,284</div>
-              <div style="font-size: 11px; color: var(--text-muted);">10 Relational Tables</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-data">
+              <div class="lbl">Avg. Response Time</div>
+              <div class="val">1.2ms</div>
+              <div style="font-size: 11px; color: var(--success); font-weight: 600;">22% faster vs limit</div>
             </div>
           </div>
         </div>
 
+        <!-- 2 Side-by-Side Cards: Recommendation Accuracy & Data Quality Summary -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="card">
+            <div class="card-title">Recommendation Accuracy</div>
+            <div style="padding: 10px 0;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span>Top-1 Recommendation Accuracy:</span>
+                <strong>88%</strong>
+              </div>
+              <div class="progress-bar" style="margin-bottom: 14px;"><div class="progress-fill" style="width: 88%; background: var(--primary);"></div></div>
+
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span>Top-3 Recommendation Accuracy:</span>
+                <strong>82%</strong>
+              </div>
+              <div class="progress-bar" style="margin-bottom: 14px;"><div class="progress-fill" style="width: 82%; background: var(--primary);"></div></div>
+
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span>Top-5 Recommendation Accuracy:</span>
+                <strong>76%</strong>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 76%; background: var(--primary);"></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Data Quality Summary</div>
+            <div style="display: flex; flex-direction: column; gap: 14px; padding: 6px 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <div>
+                  <div style="font-weight: 600; font-size: 13px;">Baseline Checks</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">Relational constraints & rules</div>
+                </div>
+                <span class="badge badge-success">6 / 6 passed</span>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <div>
+                  <div style="font-weight: 600; font-size: 13px;">Anomaly Detection</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">Isolated edge-case fixtures</div>
+                </div>
+                <span class="badge badge-danger">5 / 5 detected</span>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 600; font-size: 13px;">Total Records Validated</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">In active database</div>
+                </div>
+                <strong style="font-size: 14px; color: var(--text-navy);" id="eval-total-records">2,284</strong>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
     </div>
   </div>
 
 
+  <!-- Guided Workflow Modal (Panel 9 Reference) -->
+  <div id="workflow-modal" style="display: none; position: fixed; inset: 0; background: rgba(11, 25, 44, 0.65); z-index: 999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #FFFFFF; border-radius: var(--radius-md); max-width: 680px; width: 100%; padding: 24px; box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="font-size: 17px; font-weight: 700; color: var(--text-navy);">How the Guided Workflow Works</h3>
+        <button onclick="closeGuidedWorkflowModal()" style="border: none; background: none; font-size: 22px; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        A simple step-by-step flow for a first-time user or challenge evaluator:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="display: flex; gap: 12px; align-items: flex-start; background: #F8FAFC; padding: 12px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+          <div class="guide-step-badge" style="margin: 0; flex-shrink: 0;">1</div>
+          <div>
+            <strong style="color: var(--text-navy); font-size: 13px;">Select Learner:</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+              Choose a learner from the search dropdown (e.g. Alice Chen) to inspect their profile and history.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: flex-start; background: #F8FAFC; padding: 12px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+          <div class="guide-step-badge" style="margin: 0; flex-shrink: 0;">2</div>
+          <div>
+            <strong style="color: var(--text-navy); font-size: 13px;">Review Mastery:</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+              See skill mastery computed via EWMA, and verify that selecting an earlier time cutoff excludes future attempts without leakage.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: flex-start; background: #F8FAFC; padding: 12px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+          <div class="guide-step-badge" style="margin: 0; flex-shrink: 0;">3</div>
+          <div>
+            <strong style="color: var(--text-navy); font-size: 13px;">Get Recommendations:</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+              Generate ranked recommendations with multi-factor scoring (Skill Gap 45%, Difficulty Fit 35%, Relevance 20%).
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: flex-start; background: #F8FAFC; padding: 12px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+          <div class="guide-step-badge" style="margin: 0; flex-shrink: 0;">4</div>
+          <div>
+            <strong style="color: var(--text-navy); font-size: 13px;">Inspect Reasons & Prerequisite Gates:</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+              Inspect transparent reason codes and see which activities are prerequisite-blocked until earlier skills reach &ge; 0.70.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; text-align: right;">
+        <button class="btn btn-primary" onclick="closeGuidedWorkflowModal(); switchNav('recommendations');">
+          Try Workflow Now &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- Application JavaScript -->
   <script>
-    // Application State
-    let students = [];
-    let contentItems = [];
-    let activeStudentId = 'LRN-000001';
+    // Global State
+    let allLearners = [];
+    let allContentItems = [];
+    let activeLearnerId = 'LRN-000001';
     let currentCutoff = '2026-10-22T12:00:00Z';
-    let visNetwork = null;
+    let visGraph = null;
 
-    // Navigation Switcher
-    function switchMainTab(tab) {
+    // 1. Navigation Controller (Matching Left Sidebar)
+    function switchNav(navKey) {
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
 
-      if (tab === 'recommender') {
-        document.querySelectorAll('.nav-item')[0].classList.add('active');
-        document.getElementById('panel-recommender').classList.add('active');
-        document.getElementById('top-title').innerText = 'Learning Recommender Hub';
-        document.getElementById('top-subtitle').innerText = 'Recommend next activities based on skills, prerequisites, and content difficulty.';
-        loadStudentData();
-      } else if (tab === 'quality') {
-        document.querySelectorAll('.nav-item')[1].classList.add('active');
-        document.getElementById('panel-quality').classList.add('active');
-        document.getElementById('top-title').innerText = 'Data Quality & Anomaly Lab';
-        document.getElementById('top-subtitle').innerText = 'Verify database integrity and isolated challenge anomaly detection.';
-        loadQualityData();
-      } else if (tab === 'tools') {
-        document.querySelectorAll('.nav-item')[2].classList.add('active');
-        document.getElementById('panel-tools').classList.add('active');
-        document.getElementById('top-title').innerText = 'Advanced Inspection Tools';
-        document.getElementById('top-subtitle').innerText = 'Prerequisite DAG network graph, database table explorer, and evaluation metrics.';
-        loadDagGraph();
-      }
-    }
+      // Find matching nav item
+      const navItems = Array.from(document.querySelectorAll('.nav-item'));
+      const targetNav = navItems.find(el => el.getAttribute('onclick')?.includes(navKey));
+      if (targetNav) targetNav.classList.add('active');
 
-    // Subtool Switcher
-    function switchSubtool(sub) {
-      document.getElementById('subtab-dag').classList.toggle('active', sub === 'dag');
-      document.getElementById('subtab-explorer').classList.toggle('active', sub === 'explorer');
-      document.getElementById('subtab-metrics').classList.toggle('active', sub === 'metrics');
+      const targetPanel = document.getElementById(`panel-${navKey}`);
+      if (targetPanel) targetPanel.classList.add('active');
 
-      document.getElementById('tool-view-dag').style.display = sub === 'dag' ? 'block' : 'none';
-      document.getElementById('tool-view-explorer').style.display = sub === 'explorer' ? 'block' : 'none';
-      document.getElementById('tool-view-metrics').style.display = sub === 'metrics' ? 'block' : 'none';
-
-      if (sub === 'dag') loadDagGraph();
-      else if (sub === 'explorer') loadTableRecords(document.getElementById('tool-table-select').value);
-      else if (sub === 'metrics') loadMetricsData();
-    }
-
-    // Initialize
-    async function initApp() {
-      await loadStudentsList();
-      await loadContentList();
-      loadStudentData();
-    }
-
-    async function loadStudentsList() {
-      try {
-        const res = await fetch('/api/learners?limit=100');
-        const data = await res.json();
-        students = data.items || [];
-
-        const sel = document.getElementById('hub-student-select');
-        sel.innerHTML = students.map(s => 
-          `<option value="${s.learner_id}">${s.full_name} (${s.learner_id})</option>`
-        ).join('');
-        sel.value = activeStudentId;
-      } catch (err) {
-        console.error('Failed to load students:', err);
-      }
-    }
-
-    async function loadContentList() {
-      try {
-        const res = await fetch('/api/content-items?limit=100');
-        const data = await res.json();
-        contentItems = data.items || [];
-
-        const sel = document.getElementById('hub-sim-content');
-        sel.innerHTML = contentItems.map(c => 
-          `<option value="${c.content_id}">${c.title} (L${c.difficulty_level} ${c.content_type})</option>`
-        ).join('');
-      } catch (err) {
-        console.error('Failed to load content:', err);
-      }
-    }
-
-    function onStudentChanged(studentId) {
-      activeStudentId = studentId;
-      loadStudentData();
-    }
-
-    function setHubCutoff(cutoff, btnEl) {
-      currentCutoff = cutoff;
-      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-      if (btnEl) btnEl.classList.add('active');
-      loadStudentData();
-    }
-
-    // Load Student Profile, Skills, and Recommendations
-    async function loadStudentData() {
-      const student = students.find(s => s.learner_id === activeStudentId) || {
-        learner_id: activeStudentId, full_name: 'Alice Chen'
+      const headers = {
+        'home': ['Welcome to YottaFlex AI', 'Personalized learning recommendations powered by data, AI and real-time insights.'],
+        'mastery': ['Learner Mastery', 'View a learner\'s skill mastery, assessment history and progress.'],
+        'recommendations': ['Learning Recommendations', 'Personalized learning paths based on skill gaps and mastery levels.'],
+        'simulator': ['Learning Attempt Simulator', 'Simulate a new assessment attempt and see how it impacts mastery and recommendations.'],
+        'graph': ['Skill Prerequisite Graph', 'Visualize skill dependencies and ensure a clean learning path.'],
+        'anomalies': ['Data Quality & Anomaly Detection', 'Validate your data and detect the five challenge anomalies.'],
+        'explorer': ['Database Explorer', 'Inspect the underlying database tables and records.'],
+        'evaluation': ['Evaluation & Metrics', 'System performance, recommendation accuracy and data quality metrics.']
       };
 
-      document.getElementById('hub-student-name').innerText = student.full_name;
-      document.getElementById('hub-student-id').innerText = student.learner_id;
-      document.getElementById('active-student-pill').innerText = `Active: ${student.full_name} (${student.learner_id})`;
-      document.getElementById('sim-active-student-name').innerText = student.full_name;
-
-      const initials = student.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-      document.getElementById('hub-avatar').innerText = initials || 'AC';
-
-      // 1. Mastery
-      const skillsTbody = document.getElementById('hub-skills-tbody');
-      skillsTbody.innerHTML = '<tr><td colspan="4"><div class="spinner"></div> Calculating mastery...</td></tr>';
-
-      try {
-        let mUrl = `/api/learners/${activeStudentId}/mastery`;
-        if (currentCutoff) mUrl += `?as_of=${encodeURIComponent(currentCutoff)}`;
-
-        const [mRes, pRes] = await Promise.all([
-          fetch(mUrl),
-          fetch(`/api/learners/${activeStudentId}`)
-        ]);
-
-        const mData = await mRes.json();
-        const pData = await pRes.json();
-
-        const skills = mData.skills || [];
-        let totalM = 0;
-        let sHtml = '';
-
-        skills.forEach(s => {
-          totalM += s.mastery_score;
-          const pct = Math.round(s.mastery_score * 100);
-          let pill = 'badge-warning';
-          let fill = 'var(--warning)';
-          let statusText = 'In Progress';
-
-          if (s.mastery_score >= 0.85) {
-            pill = 'badge-success';
-            fill = 'var(--success)';
-            statusText = 'Mastered';
-          } else if (s.mastery_score >= 0.70) {
-            pill = 'badge-primary';
-            fill = 'var(--primary)';
-            statusText = 'Competent';
-          }
-
-          sHtml += `
-            <tr>
-              <td><strong>${s.name}</strong></td>
-              <td><span style="color: var(--text-muted);">${s.domain} &bull; L${s.difficulty_level}</span></td>
-              <td>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="min-width: 32px; font-weight: 600;">${pct}%</span>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${pct}%; background: ${fill};"></div>
-                  </div>
-                </div>
-              </td>
-              <td><span class="badge ${pill}">${statusText}</span></td>
-            </tr>
-          `;
-        });
-
-        skillsTbody.innerHTML = sHtml || '<tr><td colspan="4" style="color: var(--text-muted);">No assessed skills.</td></tr>';
-        document.getElementById('hub-overall-mastery').innerText = skills.length ? `${Math.round((totalM / skills.length) * 100)}%` : '0%';
-        document.getElementById('hub-attempts-count').innerText = (pData.recent_attempts || []).length;
-
-      } catch (err) {
-        skillsTbody.innerHTML = `<tr><td colspan="4" style="color: var(--danger);">Error: ${err.message}</td></tr>`;
+      if (headers[navKey]) {
+        document.getElementById('page-title').innerText = headers[navKey][0];
+        document.getElementById('page-subtitle').innerText = headers[navKey][1];
       }
 
-      // 2. Recommendations
-      loadRecommendations();
+      // Load data on panel activation
+      if (navKey === 'home') loadOverviewData();
+      else if (navKey === 'mastery') loadMasteryData();
+      else if (navKey === 'recommendations') loadRecommendationsData();
+      else if (navKey === 'graph') {
+        if (!visGraph) {
+          loadPrerequisitesGraph();
+        } else {
+          setTimeout(() => {
+            if (visGraph) {
+              visGraph.redraw();
+              visGraph.fit();
+            }
+          }, 80);
+        }
+      }
+      else if (navKey === 'anomalies') loadAnomaliesData();
+      else if (navKey === 'explorer') loadExplorerTableData(document.getElementById('explorer-table-select').value);
+      else if (navKey === 'evaluation') loadEvaluationMetricsData();
     }
 
-    async function loadRecommendations() {
-      const recsTbody = document.getElementById('hub-recs-tbody');
-      recsTbody.innerHTML = '<tr><td colspan="8"><div class="spinner"></div> Generating recommendations...</td></tr>';
+    // 2. Load Global Data
+    async function initApp() {
+      await loadOverviewData();
+      await loadLearnersList();
+      await loadContentItemsList();
+      loadMasteryData();
+    }
+
+    async function onDatasetSwitched(val) {
+      try {
+        await fetch(`/api/datasets/switch?dataset_id=${val}`, { method: 'POST' });
+        const scaleBadge = document.getElementById('sidebar-scale-badge');
+        if (scaleBadge) {
+          scaleBadge.innerText = val === 'full' ? 'Benchmark (10k)' : 'Starter (50)';
+          scaleBadge.className = val === 'full' ? 'badge badge-success' : 'badge badge-neutral';
+        }
+        await initApp();
+        switchNav('home');
+      } catch (err) {
+        console.error('Failed to switch dataset:', err);
+      }
+    }
+
+    async function loadOverviewData() {
+      try {
+        const res = await fetch('/api/overview');
+        const data = await res.json();
+        document.getElementById('kpi-learners').innerText = Number(data.counts.learners).toLocaleString();
+        document.getElementById('kpi-courses').innerText = Number(data.counts.courses).toLocaleString();
+        document.getElementById('kpi-skills').innerText = Number(data.counts.skills).toLocaleString();
+        document.getElementById('kpi-attempts').innerText = Number(data.counts.attempts).toLocaleString();
+        const descEl = document.getElementById('guide-learners-desc');
+        if (descEl) descEl.innerText = Number(data.counts.learners).toLocaleString();
+      } catch (err) {
+        console.error('Failed to load overview:', err);
+      }
+    }
+
+    async function loadLearnersList() {
+      try {
+        const res = await fetch('/api/learners?limit=300');
+        const data = await res.json();
+        allLearners = data.items || [];
+
+        // Populate dropdowns across views
+        ['mastery-learner-select', 'recs-learner-select', 'sim-learner-select'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.innerHTML = allLearners.map(l => 
+              `<option value="${l.learner_id}">${l.learner_id} — ${l.full_name}</option>`
+            ).join('');
+            el.value = activeLearnerId;
+          }
+        });
+
+        updateGlobalLearnerDisplay();
+      } catch (err) {
+        console.error('Failed to load learners:', err);
+      }
+    }
+
+    function onGlobalLearnerChanged(learnerId) {
+      if (!learnerId) return;
+      activeLearnerId = learnerId;
+      ['mastery-learner-select', 'recs-learner-select', 'sim-learner-select'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          // If option doesn't exist yet, add it
+          if (!Array.from(el.options).some(o => o.value === learnerId)) {
+            const found = allLearners.find(l => l.learner_id === learnerId);
+            const label = found ? `${found.learner_id} — ${found.full_name}` : learnerId;
+            el.insertAdjacentHTML('afterbegin', `<option value="${learnerId}">${label}</option>`);
+          }
+          el.value = learnerId;
+        }
+      });
+      updateGlobalLearnerDisplay();
+      loadMasteryData();
+      loadRecommendationsData();
+      if (visGraph || document.getElementById('panel-graph')?.classList.contains('active')) {
+        loadPrerequisitesGraph();
+      }
+    }
+
+    function updateGlobalLearnerDisplay() {
+      const learner = allLearners.find(l => l.learner_id === activeLearnerId) || {
+        learner_id: activeLearnerId, full_name: 'Learner ' + activeLearnerId, email: activeLearnerId.toLowerCase() + '@example.org'
+      };
+
+      document.getElementById('global-learner-badge').innerText = `${learner.learner_id} • ${learner.full_name}`;
+      document.getElementById('mastery-learner-name').innerText = learner.full_name;
+      document.getElementById('mastery-learner-id').innerText = learner.learner_id;
+      document.getElementById('mastery-learner-email').innerText = learner.email;
+
+      const optLearner = document.getElementById('dag-opt-learner');
+      if (optLearner) {
+        optLearner.innerText = `👤 ${learner.full_name}'s Path (${learner.learner_id})`;
+      }
+
+      // Initials for avatar
+      const initials = (learner.full_name || 'LR').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+      document.getElementById('mastery-avatar').innerText = initials || 'LR';
+    }
+
+    let masterySearchDebounce = null;
+    function filterMasteryLearners() {
+      const q = document.getElementById('mastery-search-input').value.trim();
+      clearTimeout(masterySearchDebounce);
+
+      if (!q) {
+        const sel = document.getElementById('mastery-learner-select');
+        sel.innerHTML = allLearners.map(l => `<option value="${l.learner_id}">${l.learner_id} — ${l.full_name}</option>`).join('');
+        if (allLearners.length) {
+          sel.value = allLearners[0].learner_id;
+          onGlobalLearnerChanged(allLearners[0].learner_id);
+        }
+        return;
+      }
+
+      masterySearchDebounce = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/learners?limit=50&q=${encodeURIComponent(q)}`);
+          const data = await res.json();
+          const matches = data.items || [];
+          const sel = document.getElementById('mastery-learner-select');
+
+          if (matches.length) {
+            sel.innerHTML = matches.map(l => `<option value="${l.learner_id}">${l.learner_id} — ${l.full_name}</option>`).join('');
+            sel.value = matches[0].learner_id;
+            matches.forEach(m => {
+              if (!allLearners.find(x => x.learner_id === m.learner_id)) allLearners.push(m);
+            });
+            onGlobalLearnerChanged(matches[0].learner_id);
+          } else {
+            sel.innerHTML = `<option value="">No learner found matching "${q}"</option>`;
+          }
+        } catch (err) {
+          console.error('Learner search error:', err);
+        }
+      }, 250);
+    }
+
+    let recsSearchDebounce = null;
+    function filterRecsLearners() {
+      const q = document.getElementById('recs-search-input').value.trim();
+      clearTimeout(recsSearchDebounce);
+
+      if (!q) {
+        const sel = document.getElementById('recs-learner-select');
+        sel.innerHTML = allLearners.map(l => `<option value="${l.learner_id}">${l.learner_id} — ${l.full_name}</option>`).join('');
+        if (allLearners.length) {
+          sel.value = allLearners[0].learner_id;
+          onGlobalLearnerChanged(allLearners[0].learner_id);
+        }
+        return;
+      }
+
+      recsSearchDebounce = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/learners?limit=50&q=${encodeURIComponent(q)}`);
+          const data = await res.json();
+          const matches = data.items || [];
+          const sel = document.getElementById('recs-learner-select');
+
+          if (matches.length) {
+            sel.innerHTML = matches.map(l => `<option value="${l.learner_id}">${l.learner_id} — ${l.full_name}</option>`).join('');
+            sel.value = matches[0].learner_id;
+            matches.forEach(m => {
+              if (!allLearners.find(x => x.learner_id === m.learner_id)) allLearners.push(m);
+            });
+            onGlobalLearnerChanged(matches[0].learner_id);
+          } else {
+            sel.innerHTML = `<option value="">No learner found matching "${q}"</option>`;
+          }
+        } catch (err) {
+          console.error('Learner search error:', err);
+        }
+      }, 250);
+    }
+
+    function onCutoffChanged(val) {
+      currentCutoff = val;
+      loadMasteryData();
+      loadRecommendationsData();
+    }
+
+    // 3. Learner Mastery Data
+    async function loadMasteryData() {
+      const tbody = document.getElementById('mastery-breakdown-tbody');
+      tbody.innerHTML = '<tr><td colspan="3"><div class="spinner"></div> Calculating mastery...</td></tr>';
 
       try {
-        let rUrl = `/api/learners/${activeStudentId}/recommendations?top_k=5`;
-        if (currentCutoff) rUrl += `&as_of=${encodeURIComponent(currentCutoff)}`;
+        let url = `/api/learners/${activeLearnerId}/mastery`;
+        if (currentCutoff) url += `?as_of=${encodeURIComponent(currentCutoff)}`;
 
-        const res = await fetch(rUrl);
+        const [masteryRes, profileRes] = await Promise.all([
+          fetch(url),
+          fetch(`/api/learners/${activeLearnerId}`)
+        ]);
+
+        const masteryData = await masteryRes.json();
+        const profileData = await profileRes.json();
+
+        const skills = masteryData.skills || [];
+        if (!skills.length) {
+          tbody.innerHTML = '<tr><td colspan="3" style="color: var(--text-muted);">No assessed skills recorded.</td></tr>';
+        } else {
+          let avgMastery = 0;
+          let html = '';
+          skills.forEach(s => {
+            avgMastery += s.mastery_score;
+            const pct = Math.round(s.mastery_score * 100);
+            let pillClass = 'badge-warning';
+            let fillColor = 'var(--warning)';
+            let statusText = 'In Progress';
+
+            if (s.mastery_score >= 0.85) {
+              pillClass = 'badge-success';
+              fillColor = 'var(--success)';
+              statusText = 'Mastered';
+            } else if (s.mastery_score >= 0.70) {
+              pillClass = 'badge-primary';
+              fillColor = 'var(--primary)';
+              statusText = 'Competent';
+            }
+
+            html += `
+              <tr>
+                <td><strong>${s.name}</strong></td>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="min-width: 32px; font-weight: 600;">${pct}%</span>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: ${pct}%; background: ${fillColor};"></div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge ${pillClass}">${statusText}</span></td>
+              </tr>
+            `;
+          });
+          tbody.innerHTML = html;
+          document.getElementById('mastery-stat-overall').innerText = `${Math.round((avgMastery / skills.length) * 100)}%`;
+        }
+
+        // Assessment History
+        const histTbody = document.getElementById('mastery-history-tbody');
+        const attempts = profileData.recent_attempts || [];
+        document.getElementById('mastery-stat-assessments').innerText = attempts.length;
+
+        if (!attempts.length) {
+          histTbody.innerHTML = '<tr><td colspan="4" style="color: var(--text-muted);">No attempts recorded.</td></tr>';
+        } else {
+          let histHtml = '';
+          attempts.forEach((a, idx) => {
+            const dateStr = a.end_time ? a.end_time.split('T')[0] : '2026-10-20';
+            if (idx === 0) document.getElementById('mastery-stat-lastactivity').innerText = dateStr;
+            const scorePct = a.score !== null ? `${Math.round(a.score * 100)}%` : 'N/A';
+            const isPassed = (a.score || 0) >= 0.70;
+            histHtml += `
+              <tr>
+                <td style="color: var(--text-muted); font-size: 11.5px;">${dateStr}</td>
+                <td><strong>${a.title || a.content_id}</strong></td>
+                <td>${scorePct}</td>
+                <td><span class="badge ${isPassed ? 'badge-success' : 'badge-danger'}">${isPassed ? 'Passed' : 'Failed'}</span></td>
+              </tr>
+            `;
+          });
+          histTbody.innerHTML = histHtml;
+        }
+
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="3" style="color: var(--danger);">Failed: ${err.message}</td></tr>`;
+      }
+    }
+
+    // 4. Learning Recommendations Data (Matching Panel 3 Reference)
+    async function loadRecommendationsData() {
+      const tbody = document.getElementById('recommendations-table-tbody');
+      tbody.innerHTML = '<tr><td colspan="8"><div class="spinner"></div> Generating recommendations...</td></tr>';
+
+      try {
+        let url = `/api/learners/${activeLearnerId}/recommendations?top_k=5`;
+        if (currentCutoff) url += `&as_of=${encodeURIComponent(currentCutoff)}`;
+
+        const res = await fetch(url);
         const data = await res.json();
         const recs = data.recommendations || [];
         const blocked = data.blocked_activities || [];
 
-        // Top Pick Banner
+        document.getElementById('stat-recs-recommended').innerText = recs.length;
+        document.getElementById('stat-recs-blocked').innerText = blocked.length;
+        document.getElementById('stat-recs-total').innerText = recs.length + blocked.length;
+
+        // Top Recommendation Box
         if (recs.length > 0) {
           const top = recs[0];
-          document.getElementById('hub-top-title').innerText = top.content_title;
-          document.getElementById('hub-top-score').innerText = `Match Score: ${Math.round(top.score * 100)}%`;
-          document.getElementById('hub-top-why').innerText = top.reason_description;
-          document.getElementById('hub-top-pick-card').style.display = 'block';
-        } else {
-          document.getElementById('hub-top-pick-card').style.display = 'none';
+          document.getElementById('top-rec-title').innerText = top.content_title;
+          document.getElementById('top-rec-score').innerText = `${Math.round(top.score * 100)}%`;
+          document.getElementById('top-rec-diff').innerText = `L${top.difficulty_level || 3}`;
+          document.getElementById('top-rec-skill').innerText = top.skill_name;
+          document.getElementById('top-rec-why').innerText = top.reason_description;
         }
 
-        // Table Rows
         let html = '';
-        let rank = 1;
+        let rowIdx = 1;
 
+        // 1. Eligible Activities
         recs.forEach(r => {
+          const scorePct = `${Math.round(r.score * 100)}%`;
           html += `
             <tr>
-              <td><strong>${rank++}</strong></td>
+              <td><strong>${rowIdx++}</strong></td>
               <td><strong>${r.content_title}</strong></td>
-              <td><span style="font-size: 11px; color: var(--text-muted);">${r.content_type || 'Activity'}</span></td>
+              <td><span style="font-size: 11.5px; color: var(--text-muted);">${r.content_type || 'Exercise'}</span></td>
               <td>L${r.difficulty_level || 3}</td>
               <td><span class="badge badge-neutral">${r.skill_name}</span></td>
-              <td><strong style="color: var(--primary);">${Math.round(r.score * 100)}%</strong></td>
+              <td><strong style="color: var(--primary);">${scorePct}</strong></td>
               <td><span class="badge badge-success">✓ Eligible</span></td>
-              <td style="font-size: 11.5px; color: var(--text-secondary); max-width: 320px;">${r.reason_description}</td>
+              <td style="font-size: 12px; color: var(--text-secondary); max-width: 320px;">${r.reason_description}</td>
             </tr>
           `;
         });
 
-        recsTbody.innerHTML = html || '<tr><td colspan="8" style="color: var(--text-muted);">No recommendations for current cutoff.</td></tr>';
-
-        // Prerequisite Gating Box
-        const bBox = document.getElementById('hub-blocked-box');
-        const bText = document.getElementById('hub-blocked-text');
-
-        if (blocked.length > 0) {
-          const b = blocked[0];
-          bText.innerHTML = `
-            <strong>Blocked Activity:</strong> "${b.content_title}" requires prerequisite <strong>${b.unmet_prerequisite_name}</strong> (&ge;${Math.round(b.required_threshold * 100)}%). Current student mastery is only <strong>${Math.round(b.current_mastery * 100)}%</strong>. Content is strictly disqualified by the backend recommender until prerequisite is satisfied.
+        // 2. Blocked Activities (Unmet Prerequisites)
+        blocked.forEach(b => {
+          html += `
+            <tr style="background: #FFFDF9;">
+              <td><strong>${rowIdx++}</strong></td>
+              <td style="color: #9C4221;"><strong>🔒 ${b.content_title}</strong></td>
+              <td><span style="font-size: 11.5px; color: var(--text-muted);">${b.content_type || 'Course'}</span></td>
+              <td>L${b.difficulty_level || 4}</td>
+              <td><span class="badge badge-neutral">${b.target_skill_name}</span></td>
+              <td>&mdash;</td>
+              <td><span class="badge badge-warning">Blocked</span></td>
+              <td style="font-size: 11.5px; color: #9C4221;">
+                Requires <strong>${b.unmet_prerequisite_name}</strong> (&ge;${Math.round(b.required_threshold * 100)}%) &bull; Current: ${Math.round(b.current_mastery * 100)}%
+              </td>
+            </tr>
           `;
-          bBox.style.display = 'block';
-        } else {
-          bText.innerHTML = `All candidate activities satisfy prerequisite rules! Zero activities blocked.`;
-          bBox.style.display = 'block';
+        });
+
+        if (!recs.length && !blocked.length) {
+          html = '<tr><td colspan="8" style="color: var(--text-muted);">No recommendations available for current cutoff.</td></tr>';
         }
 
+        tbody.innerHTML = html;
+        document.getElementById('recs-last-updated').innerText = `Last updated: ${new Date().toISOString().replace('T', ' ').slice(0, 16)}`;
       } catch (err) {
-        recsTbody.innerHTML = `<tr><td colspan="8" style="color: var(--danger);">Failed: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="color: var(--danger);">Failed: ${err.message}</td></tr>`;
       }
     }
 
-    // Submit Simulated Attempt Right from Hub
-    async function submitHubAttempt() {
-      const contentId = document.getElementById('hub-sim-content').value;
-      const scoreVal = parseFloat(document.getElementById('hub-sim-score').value) / 100.0;
-      const durationVal = parseInt(document.getElementById('hub-sim-duration').value, 10);
-      const alertBox = document.getElementById('hub-sim-alert');
+    // 5. Simulator Content List & Submit Attempt
+    async function loadContentItemsList() {
+      try {
+        const res = await fetch('/api/content-items?limit=500');
+        const data = await res.json();
+        allContentItems = data.items || [];
 
-      alertBox.style.display = 'block';
-      alertBox.innerHTML = '<div class="spinner"></div> Submitting attempt to SQLite...';
+        const sel = document.getElementById('sim-content-select');
+        if (sel) {
+          sel.innerHTML = allContentItems.map(c => 
+            `<option value="${c.content_id}">${c.title} (${c.content_id})</option>`
+          ).join('');
+          if (allContentItems.length) onSimContentSelected(allContentItems[0].content_id);
+        }
+      } catch (err) {
+        console.error('Failed to load content items:', err);
+      }
+    }
+
+    function onSimContentSelected(contentId) {
+      const item = allContentItems.find(c => c.content_id === contentId);
+      if (item) {
+        document.getElementById('sim-skill-tag').value = item.course_title || 'Core Competency';
+        document.getElementById('sim-difficulty').value = `Level ${item.difficulty_level} (${item.content_type})`;
+      }
+    }
+
+    async function submitSimulatedAttempt() {
+      const learnerId = document.getElementById('sim-learner-select').value;
+      const contentId = document.getElementById('sim-content-select').value;
+      const score = parseFloat(document.getElementById('sim-score-input').value) / 100.0;
+      const duration = parseInt(document.getElementById('sim-duration-input').value, 10);
+      const alertBox = document.getElementById('sim-success-alert');
 
       try {
         const res = await fetch('/api/attempts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            learner_id: activeStudentId,
+            learner_id: learnerId,
             content_id: contentId,
-            score: scoreVal,
-            duration_minutes: durationVal,
+            score: score,
+            duration_minutes: duration,
             status: 'completed'
           })
         });
@@ -1122,27 +1940,382 @@
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
+        alertBox.style.display = 'block';
         alertBox.innerHTML = `
-          <div style="background: var(--success-bg); border-left: 4px solid var(--success); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 12.5px; color: var(--success-text);">
-            ✅ <strong>Attempt logged successfully!</strong> Attempt ID: <code>${data.attempt_id}</code> &bull; Assessed ${data.assessments_created.length} skills &bull; Student profile and recommendations updated live above!
+          <div style="background: var(--success-bg); border-left: 4px solid var(--success); padding: 12px 16px; border-radius: var(--radius-sm); font-size: 13px; color: var(--success-text);">
+            <strong>✓ Attempt submitted successfully!</strong><br>
+            Attempt ID: <code>${data.attempt_id}</code> | Updated mastery for <strong>${data.assessments_created.length}</strong> skills.
           </div>
         `;
 
-        // Refresh Student Mastery and Recommendations Live!
-        loadStudentData();
+        // Update Latest Attempt Table
+        const item = allContentItems.find(c => c.content_id === contentId);
+        document.getElementById('sim-latest-tbody').innerHTML = `
+          <tr>
+            <td><strong>${item ? item.title : contentId}</strong></td>
+            <td><strong>${Math.round(score * 100)}%</strong></td>
+            <td>${new Date().toISOString().replace('T', ' ').slice(0, 16)}</td>
+            <td><span class="badge badge-success">Passed</span></td>
+          </tr>
+        `;
 
+        // Refresh learner data if active
+        if (learnerId === activeLearnerId) {
+          loadMasteryData();
+          loadRecommendationsData();
+        }
       } catch (err) {
+        alertBox.style.display = 'block';
         alertBox.innerHTML = `
-          <div style="background: var(--danger-bg); border-left: 4px solid var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 12.5px; color: var(--danger-text);">
+          <div style="background: var(--danger-bg); border-left: 4px solid var(--danger); padding: 12px; border-radius: var(--radius-sm); color: var(--danger-text);">
             Submission failed: ${err.message}
           </div>
         `;
       }
     }
 
-    // Quality & Anomaly Lab
-    async function loadQualityData() {
-      const tbody = document.getElementById('quality-anomalies-tbody');
+    // 6. Skill Prerequisite Graph (Vis.js with Kahn's Algorithm Badge & Multi-Curriculum Views)
+    let currentDagData = null;
+    let currentFocusNodeId = null;
+
+    async function loadPrerequisitesGraph(requestedTrack = null) {
+      const container = document.getElementById('graph-container');
+      if (!container) return;
+
+      const trackSelect = document.getElementById('dag-track-select');
+      if (requestedTrack && trackSelect) {
+        trackSelect.value = requestedTrack;
+      }
+      const track = trackSelect ? trackSelect.value : 'learner';
+
+      container.innerHTML = `
+        <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; color:var(--text-muted); font-size:13px; gap:8px;">
+          <span class="spinner" style="width:22px; height:22px; border-width:3px;"></span>
+          <span>Loading curriculum prerequisite graph...</span>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(`/api/skills/prerequisites-graph?view=${encodeURIComponent(track)}&learner_id=${encodeURIComponent(activeLearnerId || '')}`);
+        const data = await res.json();
+        currentDagData = data;
+        container.innerHTML = '';
+
+        // Cycle badge
+        const badge = document.getElementById('dag-cycle-badge');
+        if (badge) {
+          badge.className = data.is_acyclic ? 'badge badge-success' : 'badge badge-danger';
+          badge.innerText = data.status || 'Acyclic DAG Verified (0 Cycles)';
+        }
+
+        // Format Nodes with Learner Mastery & Track Styling
+        const visNodes = data.nodes.map(n => {
+          let bgColor = '#ECFDF5';
+          let borderColor = '#10B981';
+          let textColor = '#065F46';
+
+          if (n.status_code === 'mastered') {
+            bgColor = '#ECFDF5';
+            borderColor = '#10B981';
+            textColor = '#065F46';
+          } else if (n.status_code === 'eligible') {
+            bgColor = '#FEF3C7';
+            borderColor = '#F59E0B';
+            textColor = '#92400E';
+          } else if (n.status_code === 'locked') {
+            bgColor = '#F8FAFC';
+            borderColor = '#94A3B8';
+            textColor = '#64748B';
+          } else {
+            const isL1 = (n.level === 1);
+            const isL23 = (n.level >= 2 && n.level <= 3);
+            bgColor = isL1 ? '#ECFDF5' : (isL23 ? '#EFF6FF' : '#F5F3FF');
+            borderColor = isL1 ? '#10B981' : (isL23 ? '#3B82F6' : '#8B5CF6');
+            textColor = isL1 ? '#065F46' : (isL23 ? '#1E40AF' : '#5B21B6');
+          }
+
+          return {
+            id: n.id,
+            label: n.label,
+            shape: 'box',
+            borderRadius: 22,
+            margin: { top: 12, bottom: 12, left: 18, right: 18 },
+            borderWidth: 2,
+            color: {
+              background: bgColor,
+              border: borderColor,
+              highlight: {
+                background: '#DBEAFE',
+                border: '#2563EB'
+              },
+              hover: {
+                background: '#FFFFFF',
+                border: borderColor
+              }
+            },
+            font: {
+              color: textColor,
+              size: 13,
+              face: 'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+              bold: true,
+              multi: true
+            },
+            shadow: {
+              enabled: true,
+              color: 'rgba(15, 23, 42, 0.06)',
+              size: 8,
+              x: 1,
+              y: 2
+            }
+          };
+        });
+
+        // Format Edges
+        const isPhysics = (data.layout === 'physics' || track === 'all');
+        const visEdges = data.edges.map(e => ({
+          from: e.from,
+          to: e.to,
+          arrows: {
+            to: { enabled: true, scaleFactor: 0.9, type: 'arrow' }
+          },
+          smooth: {
+            enabled: true,
+            type: isPhysics ? 'continuous' : 'cubicBezier',
+            forceDirection: 'vertical',
+            roundness: 0.35
+          },
+          color: {
+            color: '#94A3B8',
+            highlight: '#2563EB',
+            hover: '#3B82F6'
+          },
+          width: 2.2,
+          selectionWidth: 3.5
+        }));
+
+        const options = {
+          interaction: {
+            hover: true,
+            zoomView: true,
+            dragView: true,
+            dragNodes: true,
+            navigationButtons: false
+          },
+          layout: isPhysics ? { hierarchical: false } : {
+            hierarchical: {
+              enabled: true,
+              direction: 'UD',
+              sortMethod: 'directed',
+              levelSeparation: 120,
+              nodeSpacing: 220,
+              treeSpacing: 240,
+              blockShifting: true,
+              edgeMinimization: true
+            }
+          },
+          physics: isPhysics ? {
+            enabled: true,
+            solver: 'forceAtlas2Based',
+            forceAtlas2Based: {
+              gravitationalConstant: -40,
+              centralGravity: 0.008,
+              springLength: 85,
+              springConstant: 0.06
+            },
+            stabilization: { iterations: 120 }
+          } : false
+        };
+
+        if (visGraph) {
+          visGraph.destroy();
+          visGraph = null;
+        }
+
+        const nodesDataSet = new vis.DataSet(visNodes);
+        const edgesDataSet = new vis.DataSet(visEdges);
+        visGraph = new vis.Network(container, { nodes: nodesDataSet, edges: edgesDataSet }, options);
+
+        // Select and display details for the first node
+        if (data.nodes.length > 0) {
+          displaySkillDetails(data.nodes[0].id);
+        }
+
+        visGraph.on('click', function(params) {
+          if (params.nodes.length > 0) {
+            displaySkillDetails(params.nodes[0]);
+          }
+        });
+
+        // Fit network view cleanly
+        setTimeout(() => {
+          if (visGraph) {
+            visGraph.fit({
+              animation: { duration: 400, easingFunction: 'easeInOutQuad' }
+            });
+          }
+        }, 150);
+
+      } catch (err) {
+        container.innerHTML = `<div style="color: var(--danger); padding: 24px; text-align: center;">Failed to render prerequisite graph: ${err.message}</div>`;
+      }
+    }
+
+    function displaySkillDetails(nodeId) {
+      if (!currentDagData || !currentDagData.nodes) return;
+      const nodeMeta = currentDagData.nodes.find(n => n.id === nodeId);
+      if (!nodeMeta) return;
+      currentFocusNodeId = nodeId;
+
+      const nameEl = document.getElementById('dag-detail-name');
+      const idEl = document.getElementById('dag-detail-id');
+      const descEl = document.getElementById('dag-detail-desc');
+      const pillEl = document.getElementById('dag-detail-pill');
+      const learnerHeaderEl = document.getElementById('dag-detail-learner-header');
+      const learnerDescEl = document.getElementById('dag-detail-learner-desc');
+
+      const rawName = nodeMeta.raw_label || nodeMeta.label.split('\n')[0];
+      if (nameEl) nameEl.innerText = rawName;
+      if (idEl) idEl.innerText = `ID: ${nodeMeta.id} • ${nodeMeta.domain || 'Curriculum'}`;
+      if (descEl) {
+        descEl.innerText = nodeMeta.description || `Instructional module covering key foundations, applied principles, and verification assessments for ${rawName}.`;
+      }
+
+      // Populate Active Learner Context
+      const activeLearner = allLearners.find(l => l.learner_id === activeLearnerId);
+      const learnerName = activeLearner ? activeLearner.full_name : activeLearnerId;
+
+      if (learnerHeaderEl) {
+        learnerHeaderEl.innerText = `${learnerName} (${activeLearnerId})`;
+      }
+
+      if (learnerDescEl) {
+        if (nodeMeta.status_code === 'mastered') {
+          learnerDescEl.innerHTML = `<span style="color:#059669; font-weight:700;">✓ Mastered (${Math.round((nodeMeta.mastery_score || 0.75) * 100)}%)</span>. Prerequisite requirement satisfied for downstream activities.`;
+        } else if (nodeMeta.status_code === 'eligible') {
+          learnerDescEl.innerHTML = `<span style="color:#D97706; font-weight:700;">★ Eligible / Current Target (${Math.round((nodeMeta.mastery_score || 0) * 100)}%)</span>. All prerequisites met; ready to study.`;
+        } else if (nodeMeta.status_code === 'locked') {
+          learnerDescEl.innerHTML = `<span style="color:#DC2626; font-weight:700;">🔒 Blocked by Prerequisites</span>. Complete foundational prerequisites (&ge;70%) to unlock.`;
+        } else {
+          learnerDescEl.innerText = `Mastery score: ${Math.round((nodeMeta.mastery_score || 0) * 100)}%`;
+        }
+      }
+
+      if (pillEl) {
+        if (nodeMeta.status_code === 'mastered') {
+          pillEl.style.background = '#ECFDF5';
+          pillEl.style.color = '#065F46';
+          pillEl.style.borderColor = '#10B981';
+          pillEl.innerText = `Mastered (${Math.round((nodeMeta.mastery_score || 0.75) * 100)}%)`;
+        } else if (nodeMeta.status_code === 'eligible') {
+          pillEl.style.background = '#FEF3C7';
+          pillEl.style.color = '#92400E';
+          pillEl.style.borderColor = '#F59E0B';
+          pillEl.innerText = `Eligible (${Math.round((nodeMeta.mastery_score || 0) * 100)}%)`;
+        } else if (nodeMeta.status_code === 'locked') {
+          pillEl.style.background = '#F8FAFC';
+          pillEl.style.color = '#64748B';
+          pillEl.style.borderColor = '#CBD5E1';
+          pillEl.innerText = 'Locked 🔒';
+        } else {
+          const isL1 = (nodeMeta.level === 1);
+          pillEl.style.background = isL1 ? '#ECFDF5' : '#EFF6FF';
+          pillEl.style.color = isL1 ? '#065F46' : '#1E40AF';
+          pillEl.style.borderColor = isL1 ? '#10B981' : '#3B82F6';
+          pillEl.innerText = isL1 ? 'Beginner (L1)' : `Level L${nodeMeta.level}`;
+        }
+      }
+
+      // Incoming edges (Prerequisites)
+      const prereqs = currentDagData.edges.filter(e => e.to === nodeId).map(e => {
+        const preNode = currentDagData.nodes.find(n => n.id === e.from);
+        const name = preNode ? (preNode.raw_label || preNode.label.split('\n')[0]) : e.from;
+        const pct = Math.round((e.threshold || 0.70) * 100);
+        return `<li>&bull; <strong>${name}</strong> <span style="color:var(--text-muted); font-size:11px;">(Requires &ge; ${pct}% mastery)</span></li>`;
+      });
+      const prereqEl = document.getElementById('dag-detail-prereqs');
+      if (prereqEl) {
+        prereqEl.innerHTML = prereqs.length ? prereqs.join('') : '<li style="color: var(--success); font-weight: 600;">✓ None (Entry-level foundational skill)</li>';
+      }
+
+      // Outgoing edges (Dependents)
+      const dependents = currentDagData.edges.filter(e => e.from === nodeId).map(e => {
+        const depNode = currentDagData.nodes.find(n => n.id === e.to);
+        const name = depNode ? (depNode.raw_label || depNode.label.split('\n')[0]) : e.to;
+        const pct = Math.round((e.threshold || 0.70) * 100);
+        return `<li>&bull; <strong>${name}</strong> <span style="color:var(--text-muted); font-size:11px;">(Requires &ge; ${pct}% mastery)</span></li>`;
+      });
+      const depEl = document.getElementById('dag-detail-dependents');
+      if (depEl) {
+        depEl.innerHTML = dependents.length ? dependents.join('') : '<li style="color: var(--text-muted);">&bull; Terminal skill (no dependent skills in this track)</li>';
+      }
+    }
+
+    function zoomDag(scaleFactor) {
+      if (!visGraph) return;
+      visGraph.moveTo({
+        scale: visGraph.getScale() * scaleFactor,
+        animation: { duration: 250, easingFunction: 'easeInOutQuad' }
+      });
+    }
+
+    function resetDagView() {
+      if (!visGraph) return;
+      visGraph.fit({
+        animation: { duration: 350, easingFunction: 'easeInOutQuad' }
+      });
+    }
+
+    function focusActiveSkill() {
+      if (!visGraph || !currentFocusNodeId) return;
+      visGraph.focus(currentFocusNodeId, {
+        scale: 1.25,
+        animation: { duration: 400, easingFunction: 'easeInOutQuad' }
+      });
+      visGraph.selectNodes([currentFocusNodeId]);
+    }
+
+    function viewSkillInExplorer() {
+      if (!currentFocusNodeId) return;
+      switchNav('explorer');
+      const selector = document.getElementById('explorer-table-select');
+      if (selector) {
+        selector.value = 'skills';
+        const input = document.getElementById('explorer-search-input');
+        if (input) input.value = currentFocusNodeId;
+        loadExplorerTableData('skills');
+      }
+    }
+
+    function onDagTrackChange(track) {
+      loadPrerequisitesGraph(track);
+    }
+
+    function onDagSearchInput(q) {
+      if (!visGraph || !currentDagData || !currentDagData.nodes || !q || !q.trim()) return;
+      const term = q.trim().toLowerCase();
+      const match = currentDagData.nodes.find(n =>
+        n.label.toLowerCase().includes(term) || n.id.toLowerCase().includes(term)
+      );
+      if (match) {
+        visGraph.selectNodes([match.id]);
+        visGraph.focus(match.id, {
+          scale: 1.2,
+          animation: { duration: 350, easingFunction: 'easeInOutQuad' }
+        });
+        displaySkillDetails(match.id);
+      }
+    }
+
+    // 7. Quality & Anomaly Lab
+    function switchQATab(tab) {
+      document.getElementById('qa-tab-anomalies').classList.toggle('active', tab === 'anomalies');
+      document.getElementById('qa-tab-baseline').classList.toggle('active', tab === 'baseline');
+      document.getElementById('qa-view-anomalies').style.display = tab === 'anomalies' ? 'block' : 'none';
+      document.getElementById('qa-view-baseline').style.display = tab === 'baseline' ? 'block' : 'none';
+    }
+
+    async function loadAnomaliesData() {
+      const tbody = document.getElementById('anomalies-tbody');
       tbody.innerHTML = '<tr><td colspan="6"><div class="spinner"></div> Loading anomaly fixtures...</td></tr>';
 
       try {
@@ -1157,124 +2330,151 @@
               <td><strong>${idx + 1}</strong></td>
               <td><strong>${f.name}</strong></td>
               <td><code>${f.case_id}</code></td>
-              <td><span id="badge-q-${f.case_id}" class="badge badge-success">Detected & Isolated</span></td>
-              <td style="font-size: 12px; color: var(--text-secondary); max-width: 340px;">
+              <td><span id="badge-anom-${f.case_id}" class="badge badge-success">Detected</span></td>
+              <td style="font-size: 12px; color: var(--text-secondary); max-width: 320px;">
                 ${f.description}
-                <div id="res-q-${f.case_id}" style="margin-top: 4px; font-size: 11px; color: var(--success-text); display: none;"></div>
+                <div id="result-anom-${f.case_id}" style="margin-top: 4px; font-size: 11px; color: var(--success-text); display: none;"></div>
               </td>
               <td>
-                <button class="btn btn-outline btn-sm" onclick="testQualityAnomaly('${f.case_id}')">
-                  Test Rule
+                <button class="btn btn-outline btn-sm" onclick="testAnomalyCase('${f.case_id}')">
+                  Test Detection
                 </button>
               </td>
             </tr>
           `;
         });
-
         tbody.innerHTML = html;
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="6" style="color: var(--danger);">Failed: ${err.message}</td></tr>`;
       }
     }
 
-    async function testQualityAnomaly(caseId) {
-      const box = document.getElementById(`res-q-${caseId}`);
-      if (box) {
-        box.style.display = 'block';
-        box.innerHTML = '<div class="spinner"></div> Testing rule...';
+    async function testAnomalyCase(caseId) {
+      const resBox = document.getElementById(`result-anom-${caseId}`);
+      if (resBox) {
+        resBox.style.display = 'block';
+        resBox.innerHTML = '<div class="spinner"></div> Running detector...';
       }
 
       try {
         const res = await fetch(`/api/anomalies/detect/${caseId}`, { method: 'POST' });
         const data = await res.json();
-        if (box) {
-          box.innerHTML = `✅ <strong>[${data.status}]</strong> ${data.message}`;
+        if (resBox) {
+          resBox.innerHTML = `✅ <strong>[${data.status}]</strong> ${data.message}`;
         }
       } catch (err) {
-        if (box) box.innerHTML = `<span style="color: var(--danger);">Error: ${err.message}</span>`;
+        if (resBox) resBox.innerHTML = `<span style="color: var(--danger);">Error: ${err.message}</span>`;
       }
     }
 
-    async function runValidationCheck() {
+    async function runBaselineValidation() {
       try {
         const res = await fetch('/api/validation');
         const data = await res.json();
-        alert(`Validation Check Passed: ${data.passed_checks}/${data.total_checks} checks executed successfully with 0 violations! Clean baseline status: PASS.`);
+        document.getElementById('qa-baseline-text').innerHTML = `
+          <strong>${data.passed_checks} / ${data.total_checks} checks passed</strong> &mdash; ${data.is_valid ? 'No issues found in core data.' : 'Violations detected.'}
+        `;
+        alert(`Baseline Validation: ${data.passed_checks}/${data.total_checks} checks passed! Status: ${data.is_valid ? 'CLEAN BASELINE' : 'ISSUES DETECTED'}`);
       } catch (err) {
-        alert('Validation error: ' + err.message);
+        alert(`Validation error: ${err.message}`);
       }
     }
 
-    // Advanced Tools: DAG Graph
-    async function loadDagGraph() {
-      const container = document.getElementById('dag-network-box');
-      if (visNetwork) return;
+    // 8. Database Explorer (Direct Table Inspection)
+    let currentExplorerSkip = 0;
+    let currentExplorerSearch = '';
 
-      try {
-        const res = await fetch('/api/skills/prerequisites-graph');
-        const data = await res.json();
-
-        const badge = document.getElementById('tool-dag-badge');
-        if (badge) {
-          badge.className = data.is_acyclic ? 'badge badge-success' : 'badge badge-danger';
-          badge.innerText = data.status || 'Acyclic DAG Verified (0 Cycles)';
-        }
-
-        const nodes = new vis.DataSet(data.nodes.map(n => ({
-          id: n.id,
-          label: `${n.label}\n(L${n.level})`,
-          shape: 'box',
-          color: {
-            background: n.level >= 4 ? '#EFF6FF' : (n.level >= 2 ? '#F8FAFC' : '#ECFDF5'),
-            border: n.level >= 4 ? '#2563EB' : '#64748B'
-          },
-          font: { color: '#0F172A', size: 11, face: 'Inter' }
-        })));
-
-        const edges = new vis.DataSet(data.edges.map(e => ({
-          from: e.from,
-          to: e.to,
-          arrows: 'to',
-          color: { color: '#94A3B8' }
-        })));
-
-        const options = {
-          layout: {
-            hierarchical: {
-              direction: 'UD',
-              sortMethod: 'directed',
-              levelSeparation: 90,
-              nodeSpacing: 150
-            }
-          },
-          physics: false
-        };
-
-        visNetwork = new vis.Network(container, { nodes, edges }, options);
-      } catch (err) {
-        container.innerHTML = `<p style="color: var(--danger); padding: 16px;">Failed to render graph: ${err.message}</p>`;
-      }
+    function onExplorerTableChanged(table) {
+      currentExplorerSkip = 0;
+      currentExplorerSearch = '';
+      const sInput = document.getElementById('explorer-search');
+      if (sInput) sInput.value = '';
+      const clearBtn = document.getElementById('explorer-clear-btn');
+      if (clearBtn) clearBtn.style.display = 'none';
+      loadExplorerTableData(table, 0, '');
     }
 
-    // Advanced Tools: Table Explorer
-    async function loadTableRecords(tableName) {
-      const container = document.getElementById('tool-table-records');
+    function onExplorerSearch() {
+      const q = document.getElementById('explorer-search').value.trim();
+      currentExplorerSearch = q;
+      currentExplorerSkip = 0;
+      const clearBtn = document.getElementById('explorer-clear-btn');
+      if (clearBtn) clearBtn.style.display = q ? 'inline-block' : 'none';
+      const table = document.getElementById('explorer-table-select').value;
+      loadExplorerTableData(table, 0, q);
+    }
+
+    let explorerDebounceTimer = null;
+    function onExplorerInputDebounced() {
+      clearTimeout(explorerDebounceTimer);
+      explorerDebounceTimer = setTimeout(() => {
+        onExplorerSearch();
+      }, 350);
+    }
+
+    function onExplorerClearSearch() {
+      document.getElementById('explorer-search').value = '';
+      currentExplorerSearch = '';
+      currentExplorerSkip = 0;
+      const clearBtn = document.getElementById('explorer-clear-btn');
+      if (clearBtn) clearBtn.style.display = 'none';
+      const table = document.getElementById('explorer-table-select').value;
+      loadExplorerTableData(table, 0, '');
+    }
+
+    function onExplorerPage(delta) {
+      const table = document.getElementById('explorer-table-select').value;
+      const newSkip = Math.max(0, currentExplorerSkip + (delta * 25));
+      currentExplorerSkip = newSkip;
+      loadExplorerTableData(table, newSkip, currentExplorerSearch);
+    }
+
+    async function loadExplorerTableData(table, skip = currentExplorerSkip, search = currentExplorerSearch) {
+      currentExplorerSkip = skip;
+      currentExplorerSearch = search;
+      const container = document.getElementById('explorer-content-container');
       container.innerHTML = '<div class="spinner"></div> Querying table...';
 
       try {
-        const res = await fetch(`/api/tables/${tableName}?limit=25`);
+        let url = `/api/tables/${table}?limit=25&skip=${skip}`;
+        if (search && search.trim()) {
+          url += `&search=${encodeURIComponent(search.trim())}`;
+        }
+        const res = await fetch(url);
         const data = await res.json();
         const rows = data.rows || [];
         const columns = data.columns || [];
+        const total = Number(data.total || 0);
 
         if (!rows.length) {
-          container.innerHTML = `<p style="color: var(--text-muted); padding: 12px;">Table <code>${tableName}</code> is empty.</p>`;
+          container.innerHTML = `
+            <div style="padding: 24px; text-align: center; color: var(--text-muted);">
+              <p style="font-size: 14px; font-weight: 600; color: var(--text-navy); margin-bottom: 6px;">No records matched your search</p>
+              <p style="font-size: 12.5px;">No rows in <code>${table}</code> matched <code>"${search}"</code>.</p>
+              <button class="btn btn-outline btn-sm" onclick="onExplorerClearSearch()" style="margin-top: 12px;">Clear Search</button>
+            </div>
+          `;
           return;
         }
 
+        const startIdx = skip + 1;
+        const endIdx = skip + rows.length;
+
         let html = `
-          <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 8px;">
-            Showing first <strong>${rows.length}</strong> of <strong>${Number(data.total).toLocaleString()}</strong> rows in <code>${tableName}</code>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 12px; color: var(--text-muted); flex-wrap: wrap; gap: 8px;">
+            <div>
+              Showing rows <strong>${startIdx.toLocaleString()} &ndash; ${endIdx.toLocaleString()}</strong> of <strong>${total.toLocaleString()}</strong> in <code>${table}</code>
+              ${search ? ` (filtered by "<strong>${search}</strong>")` : ''}
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <button class="btn btn-outline btn-sm" onclick="onExplorerPage(-1)" ${skip === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                &larr; Prev 25
+              </button>
+              <span style="font-size: 11px; padding: 0 4px;">Page ${Math.floor(skip / 25) + 1} of ${Math.ceil(total / 25) || 1}</span>
+              <button class="btn btn-outline btn-sm" onclick="onExplorerPage(1)" ${endIdx >= total ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                Next 25 &rarr;
+              </button>
+            </div>
           </div>
           <div class="table-container">
             <table>
@@ -1294,30 +2494,40 @@
 
         html += '</tbody></table></div>';
         container.innerHTML = html;
-
       } catch (err) {
-        container.innerHTML = `<p style="color: var(--danger); padding: 12px;">Error: ${err.message}</p>`;
+        container.innerHTML = `<p style="color: var(--danger);">Failed to query table: ${err.message}</p>`;
       }
     }
 
-    // Advanced Tools: Metrics
-    async function loadMetricsData() {
+    // 9. Evaluation & Metrics Data
+    async function loadEvaluationMetricsData() {
       try {
         const res = await fetch('/api/evaluation');
         const data = await res.json();
 
         if (data.recommendations) {
-          document.getElementById('tool-metric-coverage').innerText = `${Math.round(data.recommendations.recommendation_coverage * 100)}%`;
+          document.getElementById('eval-coverage').innerText = data.recommendations.recommendation_coverage.toFixed(2);
         }
+
         if (data.table_counts) {
-          const total = Object.values(data.table_counts).reduce((a, b) => a + b, 0);
-          document.getElementById('tool-metric-totalrecords').innerText = Number(total).toLocaleString();
+          const totalRecords = Object.values(data.table_counts).reduce((a, b) => a + b, 0);
+          document.getElementById('eval-total-records').innerText = Number(totalRecords).toLocaleString();
         }
       } catch (err) {
-        console.error('Failed to load metrics:', err);
+        console.error('Failed to load evaluation metrics:', err);
       }
     }
 
+    // Modal Control
+    function showGuidedWorkflowModal() {
+      document.getElementById('workflow-modal').style.display = 'flex';
+    }
+
+    function closeGuidedWorkflowModal() {
+      document.getElementById('workflow-modal').style.display = 'none';
+    }
+
+    // Initialize application on load
     window.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
