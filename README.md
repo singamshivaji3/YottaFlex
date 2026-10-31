@@ -186,7 +186,6 @@ yottaflex_antigravity_starter/
 ├── README.md                              # Complete setup, architecture, and verification guide
 ├── PROJECT_BRIEF.md                       # Challenge overview and constraints
 ├── ANTIGRAVITY_PROMPT.md                  # Master execution prompt and build instructions
-├── YottaFlex_Challenge_and_Job_Description.md  # Official challenge specification
 ├── requirements.txt                       # Runtime dependencies (pytest, streamlit, pandas)
 ├── schema.sql                             # DDL with 10 tables, constraints, foreign keys, indexes
 ├── app.py                                 # Streamlit interactive visual dashboard
