@@ -3,7 +3,7 @@
 
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-blue.svg)](https://www.python.org/)
 [![Database](https://img.shields.io/badge/Database-SQLite3-green.svg)](https://www.sqlite.org/)
-[![Tests](https://img.shields.io/badge/Tests-33%2F33%20Passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-34%2F34%20Passing-brightgreen.svg)](tests/)
 [![Reproducibility](https://img.shields.io/badge/Reproducibility-100%25%20Deterministic-success.svg)](scripts/reproducibility_check.py)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -40,7 +40,7 @@ py --version
 py -m pip install -r requirements.txt
 ```
 
-### 2.3 Run Automated Verification Suite (33 Tests)
+### 2.3 Run Automated Verification Suite (34 Tests)
 ```powershell
 # 1. Validate baseline database integrity and 5 isolated anomaly fixtures
 py scripts/validate_data.py
@@ -48,7 +48,7 @@ py scripts/validate_data.py
 # 2. Verify deterministic reproducibility (10/10 table SHA-256 match)
 py scripts/reproducibility_check.py
 
-# 3. Run complete automated test suite (33 tests)
+# 3. Run complete automated test suite (34 tests)
 py -m pytest -v
 ```
 
