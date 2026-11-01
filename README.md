@@ -1,4 +1,12 @@
 # YottaFlex AI Recruiter Challenge
+# **Candidate & Referral Information**
+
+* **Candidate Name:** Singam Shivaji
+* **Registered Email:** [singamshivaji28@gmail.com](mailto:singamshivaji28@gmail.com)
+* **Referred By:** Srikar Ankam
+* **Referrer Corporate Email:** [Srikar.ankam@yottaflex.ai](mailto:Srikar.ankam@yottaflex.ai)
+* **Referrer Designation:** Senior Associate Engineer
+
 ## Synthetic Learning Data and Explainable Learning Recommendation Workflow
 
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-blue.svg)](https://www.python.org/)
